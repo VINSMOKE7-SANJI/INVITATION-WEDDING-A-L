@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>The Wedding of Alfa & Lenny</title>
+<meta name="description" content="Undangan Pernikahan Alfaber Simangunsong & Lenny Nova Kurniasari - 25 Oktober 2026">
+
+<meta property="og:title" content="The Wedding of Alfa & Lenny">
+<meta property="og:description" content="Sabtu, 25 Oktober 2026 - Kami mengundang Anda untuk hadir di hari bahagia kami.">
+<meta property="og:image" content="assets/images/og-image.jpg">
+<meta property="og:type" content="website">
+
+<link rel="icon" href="assets/images/favicon.png" type="image/png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Alex+Brush&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ============ OPENING / COVER SCREEN ============ -->
+<div id="cover" class="cover">
+  <div class="cover-frame">
+    <div class="ornament ornament-top"></div>
+    <p class="cover-eyebrow">The Wedding Of</p>
+    <h1 class="cover-names">Alfa <span>&amp;</span> Lenny</h1>
+    <div class="cover-divider"><span></span><i class="diamond"></i><span></span></div>
+    <p class="cover-date">25 Oktober 2026</p>
+
+    <div class="cover-guest">
+      <p>Kepada Bapak/Ibu/Saudara/i</p>
+      <p class="guest-name" id="guestName">Tamu Undangan</p>
+    </div>
+
+    <button id="openBtn" class="btn-open">
+      <span>Buka Undangan</span>
+    </button>
+    <div class="ornament ornament-bottom"></div>
+  </div>
+</div>
+
+<!-- ============ MAIN CONTENT (hidden until opened) ============ -->
+<div id="main" class="main hidden">
+
+  <!-- floating nav dots -->
+  <nav class="dotnav" id="dotnav" aria-label="Navigasi bagian">
+    <a href="#hero" data-label="Home"></a>
+    <a href="#mempelai" data-label="Mempelai"></a>
+    <a href="#acara" data-label="Acara"></a>
+    <a href="#cerita" data-label="Cerita"></a>
+    <a href="#galeri" data-label="Galeri"></a>
+    <a href="#kado" data-label="Kado"></a>
+    <a href="#rsvp" data-label="RSVP"></a>
+  </nav>
+
+  <!-- music toggle -->
+  <button id="musicBtn" class="music-btn" aria-label="Putar musik">
+    <span class="music-disc"></span>
+  </button>
+
+  <!-- ===== HERO ===== -->
+  <section id="hero" class="section hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <p class="eyebrow reveal">Undangan Pernikahan</p>
+      <h1 class="hero-title reveal">Alfaber <span>&amp;</span> Lenny</h1>
+      <p class="hero-date reveal">Sabtu, 25 Oktober 2026</p>
+      <div class="scroll-hint reveal"><span></span>Gulir ke bawah</div>
+    </div>
+  </section>
+
+  <!-- ===== QUOTE ===== -->
+  <section class="section quote-section">
+    <div class="ornament-divider"></div>
+    <p class="quote-text reveal">
+      &ldquo;Demikian juga suami mengasihi istrinya seperti tubuhnya sendiri. Barangsiapa mengasihi istrinya, ia mengasihi dirinya sendiri.&rdquo;
+    </p>
+    <p class="quote-source reveal">Efesus 5:28</p>
+    <div class="ornament-divider"></div>
+  </section>
+
+  <!-- ===== MEMPELAI (COUPLE) ===== -->
+  <section id="mempelai" class="section couple-section">
+    <p class="eyebrow reveal">Kedua Mempelai</p>
+    <h2 class="section-title reveal">Mempelai Kami</h2>
+
+    <div class="couple-grid">
+      <div class="couple-card reveal">
+        <div class="couple-photo"><img src="assets/images/groom.jpg" alt="Alfaber Simangunsong"></div>
+        <h3>Alfaber Simangunsong, S.Ak</h3>
+        <p class="couple-nick">&ldquo;Alfa&rdquo;</p>
+        <p class="couple-desc">Putra pertama dari 3 bersaudara,<br>
+        Bapak Alm. Yos Simangunsong &amp;<br>
+        Ibu Marlina Manurung</p>
+      </div>
+
+      <div class="couple-and reveal"><i class="diamond"></i></div>
+
+      <div class="couple-card reveal">
+        <div class="couple-photo"><img src="assets/images/bride.jpg" alt="Lenny Nova Kurniasari"></div>
+        <h3>Lenny Nova Kurniasari, S.Ak</h3>
+        <p class="couple-nick">&ldquo;Lenny&rdquo;</p>
+        <p class="couple-desc">Putri ketiga dari 3 bersaudara,<br>
+        Bapak Adi Subiantoro &amp;<br>
+        Ibu Iin Murtiningtiyas</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== COUNTDOWN ===== -->
+  <section class="section countdown-section">
+    <p class="eyebrow reveal">Menghitung Hari</p>
+    <h2 class="section-title reveal">Menuju Hari Bahagia</h2>
+    <div class="countdown reveal" id="countdown">
+      <div class="cd-box"><span id="cd-days">00</span><small>Hari</small></div>
+      <div class="cd-box"><span id="cd-hours">00</span><small>Jam</small></div>
+      <div class="cd-box"><span id="cd-mins">00</span><small>Menit</small></div>
+      <div class="cd-box"><span id="cd-secs">00</span><small>Detik</small></div>
+    </div>
+  </section>
+
+  <!-- ===== ACARA (EVENTS) ===== -->
+  <section id="acara" class="section events-section">
+    <p class="eyebrow reveal">Save The Date</p>
+    <h2 class="section-title reveal">Waktu &amp; Tempat</h2>
+
+    <div class="event-cards">
+      <div class="event-card reveal">
+        <div class="event-icon">&#10013;</div>
+        <h3>Pemberkatan Nikah</h3>
+        <p class="event-date">Sabtu, 25 Oktober 2026</p>
+        <p class="event-time">07.00 &ndash; 09.00 WIB</p>
+        <p class="event-place">Gedung GKJW Jemaat Gumuk Kembar</p>
+        <div class="event-map">
+          <iframe src="https://maps.google.com/maps?q=GKJW%20Jemaat%20Gumuk%20Kembar&t=&z=15&ie=UTF8&iwloc=&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Peta Lokasi Pemberkatan"></iframe>
+        </div>
+        <a class="btn-map" href="https://maps.app.goo.gl/ziMhmNVpPiELZGuu8" target="_blank" rel="noopener">Buka di Google Maps</a>
+      </div>
+
+      <div class="event-card reveal">
+        <div class="event-icon">&#127881;</div>
+        <h3>Resepsi Pernikahan</h3>
+        <p class="event-date">Sabtu, 25 Oktober 2026</p>
+        <p class="event-time">11.00 WIB &ndash; Selesai</p>
+        <p class="event-place">Jl. Tandean No. 411, Dusun Gumuk Kembar<br>RT/RW 002/001, Kel. Sidorejo, Kec. Umbulsari,<br>Kabupaten Jember, Jawa Timur<br><em>(&plusmn;100m sebelah barat GKJW Gumuk Kembar)</em></p>
+        <div class="event-map">
+          <iframe src="https://maps.google.com/maps?q=Jl%20Tandean%20No%20411%20Umbulsari%20Jember&t=&z=15&ie=UTF8&iwloc=&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Peta Lokasi Resepsi"></iframe>
+        </div>
+        <a class="btn-map" href="https://maps.app.goo.gl/ziMhmNVpPiELZGuu8" target="_blank" rel="noopener">Buka di Google Maps</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CERITA / GALERI ===== -->
+  <section id="galeri" class="section gallery-section">
+    <p class="eyebrow reveal">Galeri Kami</p>
+    <h2 class="section-title reveal">Momen Bahagia</h2>
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </section>
+
+  <!-- ===== KADO / GIFT ===== -->
+  <section id="kado" class="section gift-section">
+    <p class="eyebrow reveal">Tanpa Mengurangi Rasa Hormat</p>
+    <h2 class="section-title reveal">Kirim Kado</h2>
+    <p class="gift-desc reveal">Doa restu Anda adalah karunia yang paling berarti bagi kami.<br>Jika ingin memberi tanda kasih, kami sediakan pilihan berikut.</p>
+
+    <div class="bank-cards">
+      <div class="bank-card bri reveal">
+        <div class="bank-card-top">
+          <span class="bank-chip"></span>
+          <span class="bank-logo">BRI</span>
+        </div>
+        <div class="bank-number" id="briNumber">1137 0100 1677 531</div>
+        <div class="bank-card-bottom">
+          <div>
+            <small>Bank Rakyat Indonesia</small>
+            <p>ALFABER SIMANGUNSONG</p>
+          </div>
+          <button class="btn-copy" data-copy="113701001677531" data-target="briCopyMsg">Salin</button>
+        </div>
+        <span class="copy-msg" id="briCopyMsg">Tersalin!</span>
+      </div>
+
+      <div class="bank-card bca reveal">
+        <div class="bank-card-top">
+          <span class="bank-chip"></span>
+          <span class="bank-logo">BCA</span>
+        </div>
+        <div class="bank-number" id="bcaNumber">6710 1477 93</div>
+        <div class="bank-card-bottom">
+          <div>
+            <small>Bank Central Asia</small>
+            <p>LENNY NOVA KURNIASARI</p>
+          </div>
+          <button class="btn-copy" data-copy="6710147793" data-target="bcaCopyMsg">Salin</button>
+        </div>
+        <span class="copy-msg" id="bcaCopyMsg">Tersalin!</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== RSVP ===== -->
+  <section id="rsvp" class="section rsvp-section">
+    <p class="eyebrow reveal">Konfirmasi Kehadiran</p>
+    <h2 class="section-title reveal">RSVP &amp; Ucapan</h2>
+    <p class="rsvp-desc reveal">Mohon konfirmasi kehadiran Anda dan berikan doa restu untuk kami.</p>
+
+    <form id="rsvpForm" class="rsvp-form reveal">
+      <input type="text" id="rsvpName" placeholder="Nama Anda" required>
+      <select id="rsvpAttend" required>
+        <option value="" disabled selected>Konfirmasi Kehadiran</option>
+        <option value="Hadir">Hadir</option>
+        <option value="Tidak Hadir">Tidak Hadir</option>
+        <option value="Ragu-ragu">Masih Ragu</option>
+      </select>
+      <select id="rsvpGuests">
+        <option value="1">1 Orang</option>
+        <option value="2">2 Orang</option>
+        <option value="3">3 Orang</option>
+        <option value="4">4 Orang</option>
+      </select>
+      <textarea id="rsvpMessage" rows="3" placeholder="Tulis ucapan dan doa untuk kedua mempelai..." required></textarea>
+      <button type="submit" class="btn-submit" id="rsvpSubmitBtn">Kirim Konfirmasi</button>
+    </form>
+
+    <!-- shown after successful submit -->
+    <div id="rsvpThanks" class="rsvp-thanks hidden">
+      <p class="rsvp-thanks-title">Terima kasih atas doa &amp; konfirmasinya&#33;</p>
+      <p class="rsvp-thanks-sub">Sampaikan juga konfirmasi Anda langsung melalui WhatsApp kepada:</p>
+      <div class="wa-choices">
+        <button class="btn-wa" data-wa="alfa" data-phone="6281247770168">Alfa</button>
+        <button class="btn-wa" data-wa="lenny" data-phone="6285859866900">Lenny</button>
+      </div>
+    </div>
+
+    <!-- live wishes wall -->
+    <div class="wishes-wall">
+      <h3>Ucapan &amp; Doa</h3>
+      <div id="wishesList" class="wishes-list">
+        <p class="wishes-empty">Memuat ucapan&hellip;</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CLOSING ===== -->
+  <section class="section closing-section">
+    <div class="ornament ornament-top"></div>
+    <p class="closing-eyebrow reveal">Terima Kasih</p>
+    <h2 class="closing-title reveal">Kami yang Berbahagia</h2>
+    <p class="closing-names reveal">Alfaber &amp; Lenny</p>
+    <p class="closing-note reveal">Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila<br>Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.</p>
+    <div class="ornament ornament-bottom"></div>
+  </section>
+
+</div>
+
+<audio id="bgMusic" loop preload="none">
+  <source src="assets/audio/music.mp3" type="audio/mpeg">
+</audio>
+
+<script src="js/config.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>
