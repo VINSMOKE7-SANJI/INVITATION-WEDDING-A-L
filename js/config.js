@@ -13,7 +13,7 @@ const CONFIG = {
   // URL Web App Google Apps Script (lihat google-apps-script/Code.gs & README.md)
   // Setelah deploy, tempel URL-nya di sini, contoh:
   // "https://script.google.com/macros/s/AKfycb.../exec"
-  scriptURL: "",
+  scriptURL: "https://script.google.com/macros/s/AKfycbx0vGnCKqdzPuC7ytGSNsvcRz6lVv5EnVCQYRQ-5kpAzbYwjq82QfX6HBLCtIaJBigOiw/exec",
 
   // Nomor WhatsApp tujuan (format internasional, tanpa tanda + atau spasi)
   whatsapp: {
