@@ -98,6 +98,25 @@
     setInterval(tick, 1000);
   }
 
+  /* ---------- Dress code swatches ---------- */
+  const dcContainer = document.getElementById("dresscodeColors");
+  if (dcContainer && Array.isArray(CONFIG.dressCode)) {
+    CONFIG.dressCode.forEach(function (item) {
+      const wrap = document.createElement("div");
+      wrap.className = "dresscode-swatch";
+      wrap.innerHTML = '<span class="dot" style="background:' + item.color + '"></span><span>' + item.label + '</span>';
+      dcContainer.appendChild(wrap);
+    });
+  }
+
+  /* ---------- Live streaming (optional) ---------- */
+  const liveSection = document.getElementById("liveSection");
+  const liveBtn = document.getElementById("liveBtn");
+  if (CONFIG.liveStreamingURL) {
+    liveBtn.href = CONFIG.liveStreamingURL;
+    liveSection.classList.remove("hidden");
+  }
+
   /* ---------- Gallery ---------- */
   const galleryGrid = document.getElementById("galleryGrid");
   for (let i = 1; i <= CONFIG.galleryCount; i++) {
