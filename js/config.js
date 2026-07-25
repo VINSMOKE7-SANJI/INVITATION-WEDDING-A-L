@@ -19,5 +19,17 @@ const CONFIG = {
   whatsapp: {
     alfa: "6281247770168",
     lenny: "6285859866900"
-  }
+  },
+
+  // Warna dress code yang disarankan ke tamu. Ubah "color" (kode HEX) dan
+  // "label" sesuai keinginan. Boleh tambah/kurangi jumlah warnanya.
+  dressCode: [
+    { color: "#6b1f21", label: "Maroon" },
+    { color: "#b8843c", label: "Gold" },
+    { color: "#3a2115", label: "Coklat Tua" }
+  ],
+
+  // Link live streaming (YouTube/Instagram/Zoom, dll). Kosongkan ("") kalau
+  // tidak ada live streaming -- section-nya otomatis akan disembunyikan.
+  liveStreamingURL: ""
 };
