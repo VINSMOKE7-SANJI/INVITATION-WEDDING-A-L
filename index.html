@@ -24,6 +24,8 @@
 <!-- ============ OPENING / COVER SCREEN ============ -->
 <div id="cover" class="cover">
   <div class="cover-frame">
+    <p class="cover-logo">Alfa &amp; Lenny</p>
+    <p class="cover-logo-sub">I N V I T A T I O N</p>
     <div class="ornament ornament-top"></div>
     <p class="cover-eyebrow">The Wedding Of</p>
     <h1 class="cover-names">Alfa <span>&amp;</span> Lenny</h1>
@@ -74,12 +76,12 @@
 
   <!-- ===== QUOTE ===== -->
   <section class="section quote-section">
-    <div class="ornament-divider"></div>
+    <div class="monogram reveal"><span>A</span><i class="diamond"></i><span>L</span></div>
     <p class="quote-text reveal">
       &ldquo;Demikian juga suami mengasihi istrinya seperti tubuhnya sendiri. Barangsiapa mengasihi istrinya, ia mengasihi dirinya sendiri.&rdquo;
     </p>
     <p class="quote-source reveal">Efesus 5:28</p>
-    <div class="ornament-divider"></div>
+    <div class="batik-border"></div>
   </section>
 
   <!-- ===== MEMPELAI (COUPLE) ===== -->
@@ -154,10 +156,29 @@
     </div>
   </section>
 
+  <!-- ===== DRESS CODE ===== -->
+  <section class="section dresscode-section">
+    <p class="eyebrow reveal">Tanpa Mengurangi Rasa Hormat</p>
+    <h2 class="section-title reveal">Dress Code</h2>
+    <p class="dresscode-desc reveal">Kami dengan hormat menganjurkan Bapak/Ibu/Saudara/i untuk mengenakan warna-warna berikut pada hari istimewa kami.</p>
+    <div class="dresscode-colors reveal" id="dresscodeColors"></div>
+  </section>
+
+  <!-- ===== LIVE STREAMING (opsional, isi liveStreamingURL di js/config.js) ===== -->
+  <section class="section live-section hidden" id="liveSection">
+    <p class="eyebrow reveal">Bagi yang Berhalangan Hadir</p>
+    <h2 class="section-title reveal">Live Streaming</h2>
+    <p class="live-desc reveal">Temui kami secara virtual untuk menyaksikan jalannya acara pernikahan kami melalui tautan berikut.</p>
+    <a class="btn-live reveal" id="liveBtn" href="#" target="_blank" rel="noopener">&#128247; Lihat Live Streaming</a>
+  </section>
+
+  <!-- ===== DARK THEME ZONE: GALERI / KADO / RSVP ===== -->
+  <div class="dark-zone">
+
   <!-- ===== CERITA / GALERI ===== -->
   <section id="galeri" class="section gallery-section">
     <p class="eyebrow reveal">Galeri Kami</p>
-    <h2 class="section-title reveal">Momen Bahagia</h2>
+    <h2 class="section-title reveal">Our Moments</h2>
     <div class="gallery-grid" id="galleryGrid"></div>
   </section>
 
@@ -245,14 +266,16 @@
     </div>
   </section>
 
+  </div><!-- /.dark-zone -->
+
   <!-- ===== CLOSING ===== -->
   <section class="section closing-section">
-    <div class="ornament ornament-top"></div>
-    <p class="closing-eyebrow reveal">Terima Kasih</p>
-    <h2 class="closing-title reveal">Kami yang Berbahagia</h2>
-    <p class="closing-names reveal">Alfaber &amp; Lenny</p>
-    <p class="closing-note reveal">Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila<br>Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.</p>
-    <div class="ornament ornament-bottom"></div>
+    <div class="closing-bg"></div>
+    <div class="closing-content">
+      <p class="closing-eyebrow reveal">Terima Kasih</p>
+      <h2 class="closing-names reveal">Alfaber &amp; Lenny</h2>
+      <p class="closing-note reveal">Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila<br>Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.</p>
+    </div>
   </section>
 
 </div>
