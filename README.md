@@ -1,7 +1,25 @@
 # Undangan Pernikahan Digital — Alfa & Lenny
 
 Website undangan pernikahan statis (HTML/CSS/JS), siap diunggah ke **GitHub Pages**.
-Tema: elegant dark forest green & gold, sesuai referensi video yang diminta.
+Tema: **cream/ivory + maroon + gold**, mengikuti gaya referensi video yang dikirim
+(bagian atas terang/cream untuk cover, mempelai, acara, dress code; bagian
+galeri-kado-RSVP beralih ke nuansa maroon gelap seperti di video).
+
+> Catatan desain: ilustrasi rumah gadang di video referensi sengaja **tidak**
+> ditiru karena itu ciri khas budaya Minang, sedangkan Alfa (Batak) & Lenny
+> menikah di gereja GKJW Jawa Timur — jadi motif diganti ilustrasi botanical
+> yang lebih netral supaya tetap elegan tanpa salah budaya.
+
+### Bagian yang sudah dibuat mengikuti video:
+- Cover dengan logo/tagline ala "Invitation"
+- Monogram besar "A & L" + ayat + garis batik, seperti frame "P & A" di video
+- Kartu mempelai bulat + nama orang tua
+- Dress code (2 lingkaran warna, bisa diubah di config)
+- Live streaming (opsional, disembunyikan otomatis kalau link kosong)
+- Galeri "Our Moments" dengan latar maroon gelap
+- Kartu kado bergaya kartu elegan gelap-emas
+- RSVP + dinding ucapan
+- Penutup foto dengan overlay "Terima Kasih"
 
 ---
 
@@ -120,7 +138,13 @@ Nomor WhatsApp diatur di `js/config.js` bagian `whatsapp`.
 
 ---
 
-## 6. Mengubah tanggal, lokasi, teks lainnya
+## 6. Dress code & Live Streaming (opsional)
+
+- **Warna dress code**: edit array `dressCode` di `js/config.js` (kode warna HEX + label).
+- **Live streaming**: isi `liveStreamingURL` di `js/config.js` dengan link YouTube/Zoom/dll.
+  Kalau dikosongkan (`""`), section live streaming otomatis tersembunyi.
+
+## 7. Mengubah tanggal, lokasi, teks lainnya
 
 - **Tanggal countdown**: `js/config.js` → `weddingDateTime`.
 - **Tanggal/jam/lokasi yang tertulis, nama mempelai, dll**: langsung edit
@@ -132,7 +156,7 @@ Nomor WhatsApp diatur di `js/config.js` bagian `whatsapp`.
 
 ---
 
-## 7. Cek lokal sebelum upload (opsional)
+## 8. Cek lokal sebelum upload (opsional)
 
 Buka `index.html` langsung di browser, atau jalankan server lokal:
 ```bash
