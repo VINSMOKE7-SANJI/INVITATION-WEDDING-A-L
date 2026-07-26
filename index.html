@@ -67,7 +67,13 @@
   <section id="hero" class="section hero">
     <div class="hero-bg"></div>
     <div class="hero-content">
-      <div class="scroll-hint reveal"><span></span>Gulir ke bawah</div>
+      <div class="scroll-hint reveal">
+        <span class="scroll-label">Gulir ke bawah</span>
+        <span class="scroll-chevrons">
+          <i class="chev"></i>
+          <i class="chev"></i>
+        </span>
+      </div>
     </div>
   </section>
 
@@ -79,6 +85,7 @@
       <video autoplay muted loop playsinline preload="none" id="bgVideo">
         <source src="assets/background.mp4" type="video/mp4">
       </video>
+      <div class="video-tint"></div>
       <div class="video-fallback"></div>
     </div>
 
@@ -87,7 +94,7 @@
       <!-- ===== QUOTE ===== -->
       <section class="section quote-section">
         <div class="glass-card">
-          <div class="monogram reveal"><span>A</span><i class="diamond"></i><span>L</span></div>
+          <div class="monogram-egg reveal"><img src="assets/images/favicon.png" alt="Alfa & Lenny"></div>
           <p class="quote-text reveal">
             &ldquo;Demikian juga suami mengasihi istrinya seperti tubuhnya sendiri. Barangsiapa mengasihi istrinya, ia mengasihi dirinya sendiri.&rdquo;
           </p>
@@ -233,7 +240,10 @@
           <div class="bank-card reveal">
             <div class="bank-card-top">
               <span class="bank-chip"></span>
-              <span class="bank-contactless">&#8226;))</span>
+              <div class="bank-top-right">
+                <span class="bank-contactless">&#8226;))</span>
+                <span class="bank-gpn">GPN</span>
+              </div>
             </div>
             <div class="bank-number" id="briNumber">1137 0100 1677 531</div>
             <div class="bank-card-bottom">
@@ -243,14 +253,16 @@
               </div>
               <button class="btn-copy btn-bounce-x" data-copy="113701001677531" data-target="briCopyMsg"><span>Salin</span><i class="arrow-right">&#8594;</i></button>
             </div>
-            <span class="bank-gpn">GPN</span>
             <span class="copy-msg" id="briCopyMsg">Tersalin!</span>
           </div>
 
           <div class="bank-card reveal">
             <div class="bank-card-top">
               <span class="bank-chip"></span>
-              <span class="bank-contactless">&#8226;))</span>
+              <div class="bank-top-right">
+                <span class="bank-contactless">&#8226;))</span>
+                <span class="bank-gpn">GPN</span>
+              </div>
             </div>
             <div class="bank-number" id="bcaNumber">6710 1477 93</div>
             <div class="bank-card-bottom">
@@ -260,7 +272,6 @@
               </div>
               <button class="btn-copy btn-bounce-x" data-copy="6710147793" data-target="bcaCopyMsg"><span>Salin</span><i class="arrow-right">&#8594;</i></button>
             </div>
-            <span class="bank-gpn">GPN</span>
             <span class="copy-msg" id="bcaCopyMsg">Tersalin!</span>
           </div>
         </div>
@@ -306,6 +317,13 @@
               <button class="btn-wa btn-bounce-x" data-wa="alfa" data-phone="6281247770168"><span>Alfa</span><i class="arrow-right">&#8594;</i></button>
               <button class="btn-wa btn-bounce-x" data-wa="lenny" data-phone="6285859866900"><span>Lenny</span><i class="arrow-right">&#8594;</i></button>
             </div>
+            <p class="rsvp-done-note hidden" id="rsvpDoneNote">Konfirmasi Anda sudah tercatat. Terima kasih 🤍</p>
+          </div>
+
+          <!-- shown on repeat visits from the same device, instead of the form -->
+          <div id="rsvpAlready" class="rsvp-thanks hidden">
+            <p class="rsvp-thanks-title">Anda sudah mengonfirmasi kehadiran</p>
+            <p class="rsvp-thanks-sub">Terima kasih atas doa &amp; ucapan yang sudah diberikan. Sampai jumpa di hari bahagia kami!</p>
           </div>
 
           <!-- live wishes wall with pagination -->
@@ -338,6 +356,49 @@
     </div>
   </section>
 
+  <!-- ===== MINI GAME (main sekali per perangkat, untuk pemenang skor terbaik) ===== -->
+  <section class="section game-section" id="gameSection">
+    <p class="eyebrow reveal">Main Yuk, Sebelum Pulang</p>
+    <h2 class="section-title reveal">Tantangan Skor Terbaik</h2>
+    <p class="game-desc reveal">Hindari rintangan, kumpulkan koin sebanyak mungkin! Skor tertinggi akan
+      mendapat hadiah spesial dari kami. <strong>Setiap tamu hanya bisa main satu kali</strong>, jadi pastikan fokus ya.</p>
+
+    <div class="game-stage" id="gameStage">
+      <div class="game-topbar">
+        <span class="game-score-label">Skor: <span id="gameScoreLive">0</span></span>
+        <button class="game-fullscreen-btn" id="gameFullscreenBtn" title="Layar penuh">&#9974;</button>
+      </div>
+
+      <div class="game-canvas-wrap">
+        <canvas id="gameCanvas"></canvas>
+
+        <div class="game-overlay" id="gameIntro">
+          <p class="game-overlay-title">Siap Berlari?</p>
+          <p class="game-overlay-sub">Geser kiri/kanan untuk pindah jalur, geser ke atas untuk lompat.</p>
+          <button class="btn-submit btn-bounce-x" id="gameStartBtn"><span>Mulai Main</span><i class="arrow-right">&#8594;</i></button>
+        </div>
+
+        <div class="game-overlay hidden" id="gameOver">
+          <p class="game-overlay-title">Game Selesai!</p>
+          <p class="game-overlay-sub">Skor kamu: <span id="gameOverScore">0</span></p>
+          <p class="game-overlay-note">Skor sudah tercatat. Terima kasih sudah bermain &#127881;</p>
+        </div>
+
+        <div class="game-overlay hidden" id="gameAlreadyPlayed">
+          <p class="game-overlay-title">Sudah Main Nih!</p>
+          <p class="game-overlay-sub">Skor kamu sebelumnya: <span id="gameAlreadyScore">0</span></p>
+          <p class="game-overlay-note">Setiap tamu hanya kebagian satu kesempatan. Ditunggu pengumuman pemenangnya!</p>
+        </div>
+      </div>
+
+      <div class="game-controls">
+        <button class="game-ctrl-btn" id="gameBtnLeft" aria-label="Kiri">&#8592;</button>
+        <button class="game-ctrl-btn game-ctrl-jump" id="gameBtnJump" aria-label="Lompat">&#8593;</button>
+        <button class="game-ctrl-btn" id="gameBtnRight" aria-label="Kanan">&#8594;</button>
+      </div>
+    </div>
+  </section>
+
   <!-- ===== FOOTER AD ===== -->
   <footer class="footer-ad">
     <a href="#" id="footerAdBtn" class="btn-footer-ad btn-bounce-x">
@@ -354,5 +415,6 @@
 
 <script src="js/config.js"></script>
 <script src="js/script.js"></script>
+<script src="js/game.js"></script>
 </body>
 </html>
