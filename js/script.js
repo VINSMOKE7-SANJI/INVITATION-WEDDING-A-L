@@ -197,11 +197,30 @@
     });
   });
 
-  /* ---------- RSVP form ---------- */
+  /* ---------- RSVP form: satu perangkat = satu ucapan (localStorage) ---------- */
+  const RSVP_DONE_KEY = "al_rsvp_done";
   const rsvpForm = document.getElementById("rsvpForm");
   const rsvpSubmitBtn = document.getElementById("rsvpSubmitBtn");
   const rsvpThanks = document.getElementById("rsvpThanks");
+  const rsvpAlready = document.getElementById("rsvpAlready");
+  const rsvpDoneNote = document.getElementById("rsvpDoneNote");
+  const rsvpWaChoices = document.querySelector(".wa-choices");
   let lastRsvp = null;
+
+  function alreadySubmitted() {
+    try { return localStorage.getItem(RSVP_DONE_KEY) === "true"; } catch (e) { return false; }
+  }
+  function markSubmitted() {
+    try { localStorage.setItem(RSVP_DONE_KEY, "true"); } catch (e) { /* ignore (private mode, etc) */ }
+  }
+
+  // Kalau perangkat ini sudah pernah kirim RSVP, langsung tampilkan pesan
+  // "sudah mengonfirmasi" dan sembunyikan form -- tanpa perlu login apa pun.
+  if (alreadySubmitted()) {
+    rsvpForm.classList.add("hidden");
+    rsvpThanks.classList.add("hidden");
+    rsvpAlready.classList.remove("hidden");
+  }
 
   rsvpForm.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -218,11 +237,14 @@
 
     sendToSheet({ action: "rsvp", name: name, attend: attend, guests: guests, message: message })
       .then(function () {
+        markSubmitted();
+        try { localStorage.setItem("al_rsvp_last_name", name); } catch (e) {}
         rsvpForm.classList.add("hidden");
         rsvpThanks.classList.remove("hidden");
         loadWishes();
       })
       .catch(function () {
+        markSubmitted();
         rsvpForm.classList.add("hidden");
         rsvpThanks.classList.remove("hidden");
       })
@@ -244,6 +266,10 @@
       );
       sendToSheet({ action: "wa_choice", name: name, wa_target: who }).catch(function () {});
       window.open("https://wa.me/" + phone + "?text=" + text, "_blank");
+
+      // langkah WA selesai -- sembunyikan pilihan tombol, tampilkan catatan selesai
+      if (rsvpWaChoices) rsvpWaChoices.classList.add("hidden");
+      if (rsvpDoneNote) rsvpDoneNote.classList.remove("hidden");
     });
   });
 
