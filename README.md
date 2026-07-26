@@ -13,6 +13,7 @@ tengah halaman dan galeri foto yang auto-scroll tanpa henti.
 ├── css/style.css                    -> semua styling
 ├── js/config.js                     -> pengaturan mudah (tanggal, galeri, backend, dll)
 ├── js/script.js                     -> logika (countdown, galeri, RSVP, dll)
+├── js/game.js                       -> mini game tantangan skor (lihat bagian 11)
 ├── assets/images/                   -> semua foto (16 galeri + cover + foto mempelai)
 ├── assets/audio/                    -> taruh musik latar di sini (music.mp3)
 ├── assets/background.mp4            -> video latar (lihat spesifikasi di bawah)
@@ -162,7 +163,22 @@ bawah halaman akan membuka chat WhatsApp ke nomor yang diatur di
 
 ---
 
-## 10. Cek lokal sebelum upload (opsional)
+## 11. Mini game (tantangan skor terbaik)
+
+Ada game lari-hindari-rintangan original di atas footer (bukan Subway Surfers
+asli -- itu properti berhak cipta, jadi aku buatkan versi original bergaya
+serupa: 3 lajur, hindari rintangan, kumpulkan koin, kontrol geser/tap/panah).
+
+- **Main sekali per perangkat**: begitu game over, perangkat itu tidak bisa
+  main lagi (disimpan di localStorage browser, bukan akun/login).
+- **Skor tersimpan otomatis** ke tab baru **"GameScore"** di Google Sheet yang
+  sama (kolom: Timestamp, Nama, Skor) -- nama diambil dari nama yang diisi
+  di form RSVP kalau tamu sudah mengisi, atau "Tamu" kalau belum.
+- **Layar penuh**: ada tombol ⛶ di pojok kanan atas area game.
+- Untuk menentukan pemenang, buka tab "GameScore" di Google Sheet dan urutkan
+  kolom Skor dari besar ke kecil.
+
+## 12. Cek lokal sebelum upload (opsional)
 
 ```bash
 python3 -m http.server 8080
