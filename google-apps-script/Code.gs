@@ -1,9 +1,11 @@
 /**
- * BACKEND RSVP -> GOOGLE SHEETS
+ * BACKEND RSVP + GAME LEADERBOARD -> GOOGLE SHEETS
  * =========================================================
  * Cara pakai singkat (lengkapnya ada di README.md):
- * 1. Buat Google Sheet baru, buat 2 sheet/tab bernama persis: "RSVP"
- *    dengan header di baris 1: Timestamp | Nama | Kehadiran | JumlahTamu | Ucapan | WA_Target
+ * 1. Buat Google Sheet baru. Tab-tab di bawah ini akan dibuat OTOMATIS oleh
+ *    skrip ini saat pertama kali dipakai -- tidak perlu dibuat manual.
+ *      - "RSVP"      : Timestamp | Nama | Kehadiran | JumlahTamu | Ucapan | WA_Target
+ *      - "GameScore" : Timestamp | Nama | Skor
  * 2. Buka Extensions > Apps Script, hapus isi default, tempel semua isi file ini.
  * 3. Klik Deploy > New deployment > Web app.
  *    - Execute as: Me
@@ -12,20 +14,20 @@
  * =========================================================
  */
 
-const SHEET_NAME = "RSVP";
+const SHEET_RSVP = "RSVP";
+const SHEET_GAME = "GameScore";
 
-function getSheet_() {
+function getSheet_(name, headers) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName(SHEET_NAME);
+  let sheet = ss.getSheetByName(name);
   if (!sheet) {
-    sheet = ss.insertSheet(SHEET_NAME);
-    sheet.appendRow(["Timestamp", "Nama", "Kehadiran", "JumlahTamu", "Ucapan", "WA_Target"]);
+    sheet = ss.insertSheet(name);
+    sheet.appendRow(headers);
   }
   return sheet;
 }
 
 function doPost(e) {
-  const sheet = getSheet_();
   let payload = {};
   try {
     payload = JSON.parse(e.postData.contents);
@@ -34,6 +36,7 @@ function doPost(e) {
   }
 
   if (payload.action === "rsvp") {
+    const sheet = getSheet_(SHEET_RSVP, ["Timestamp", "Nama", "Kehadiran", "JumlahTamu", "Ucapan", "WA_Target"]);
     sheet.appendRow([
       new Date(),
       payload.name || "",
@@ -46,7 +49,7 @@ function doPost(e) {
   }
 
   if (payload.action === "wa_choice") {
-    // cari baris RSVP terakhir dengan nama yang sama dan isi kolom WA_Target
+    const sheet = getSheet_(SHEET_RSVP, ["Timestamp", "Nama", "Kehadiran", "JumlahTamu", "Ucapan", "WA_Target"]);
     const data = sheet.getDataRange().getValues();
     for (let r = data.length - 1; r >= 1; r--) {
       if (data[r][1] === payload.name) {
@@ -57,14 +60,20 @@ function doPost(e) {
     return jsonResponse_({ ok: true });
   }
 
+  if (payload.action === "game_score") {
+    const sheet = getSheet_(SHEET_GAME, ["Timestamp", "Nama", "Skor"]);
+    sheet.appendRow([new Date(), payload.name || "Tamu", payload.score || 0]);
+    return jsonResponse_({ ok: true });
+  }
+
   return jsonResponse_({ ok: false, error: "unknown_action" });
 }
 
 function doGet(e) {
-  const sheet = getSheet_();
   const action = e.parameter.action;
 
   if (action === "list") {
+    const sheet = getSheet_(SHEET_RSVP, ["Timestamp", "Nama", "Kehadiran", "JumlahTamu", "Ucapan", "WA_Target"]);
     const data = sheet.getDataRange().getValues();
     const rows = [];
     // lewati header (baris 0). Sengaja TIDAK menyertakan kolom WA_Target
@@ -75,6 +84,19 @@ function doGet(e) {
       rows.push({ name: name, attend: attend, guests: guests, message: message });
     }
     return jsonResponse_(rows);
+  }
+
+  if (action === "leaderboard") {
+    const sheet = getSheet_(SHEET_GAME, ["Timestamp", "Nama", "Skor"]);
+    const data = sheet.getDataRange().getValues();
+    const rows = [];
+    for (let r = 1; r < data.length; r++) {
+      const [, name, score] = data[r];
+      if (!name) continue;
+      rows.push({ name: name, score: score });
+    }
+    rows.sort(function (a, b) { return b.score - a.score; });
+    return jsonResponse_(rows.slice(0, 20)); // top 20 saja
   }
 
   return jsonResponse_({ ok: true, message: "RSVP backend aktif." });
