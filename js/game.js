@@ -3,6 +3,7 @@
 
   const GAME_KEY_PLAYED = "al_game_played";
   const GAME_KEY_SCORE = "al_game_score";
+  const RSVP_NAME_KEY = "al_rsvp_last_name";
 
   const section = document.getElementById("gameSection");
   if (!section) return;
@@ -14,6 +15,8 @@
   const scoreEl = document.getElementById("gameScoreLive");
   const gameStage = document.getElementById("gameStage");
   const gameIntro = document.getElementById("gameIntro");
+  const gameNeedName = document.getElementById("gameNeedName");
+  const gameClosed = document.getElementById("gameClosed");
   const gameOverEl = document.getElementById("gameOver");
   const gameOverScore = document.getElementById("gameOverScore");
   const gameAlreadyPlayed = document.getElementById("gameAlreadyPlayed");
@@ -21,6 +24,12 @@
   const btnLeft = document.getElementById("gameBtnLeft");
   const btnJump = document.getElementById("gameBtnJump");
   const btnRight = document.getElementById("gameBtnRight");
+
+  const ALL_OVERLAYS = [gameIntro, gameNeedName, gameClosed, gameOverEl, gameAlreadyPlayed];
+  function showOverlay(el) {
+    ALL_OVERLAYS.forEach(function (o) { if (o) o.classList.add("hidden"); });
+    if (el) el.classList.remove("hidden");
+  }
 
   function hasPlayed() {
     try { return localStorage.getItem(GAME_KEY_PLAYED) === "true"; } catch (e) { return false; }
@@ -31,15 +40,93 @@
       localStorage.setItem(GAME_KEY_SCORE, String(score));
     } catch (e) { /* ignore */ }
   }
+  function getRsvpName() {
+    try { return localStorage.getItem(RSVP_NAME_KEY) || ""; } catch (e) { return ""; }
+  }
+
+  /* ---- Format tanggal tutup game & pengumuman ke teks Indonesia ---- */
+  const BULAN_ID = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+  function formatTanggalID(iso) {
+    // Ambil tanggal langsung dari string ISO (YYYY-MM-DD...) supaya tidak
+    // bergeser oleh zona waktu perangkat tamu -- kita cuma perlu tanggal
+    // kalendernya, bukan konversi jam yang presisi.
+    const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (!m) return iso;
+    const year = m[1], month = parseInt(m[2], 10) - 1, day = parseInt(m[3], 10);
+    return day + " " + BULAN_ID[month] + " " + year;
+  }
+  ["gameEndDateText"].forEach(function (id) {
+    const el = document.getElementById(id);
+    if (el && CONFIG.gameEndDate) el.textContent = formatTanggalID(CONFIG.gameEndDate);
+  });
+  ["gameAnnounceDateText", "gameAnnounceDateText2"].forEach(function (id) {
+    const el = document.getElementById(id);
+    if (el && CONFIG.gameAnnounceDate) el.textContent = formatTanggalID(CONFIG.gameAnnounceDate);
+  });
+
+  /* ---- Tentukan state awal: sudah main? lewat batas waktu? belum isi RSVP? ---- */
+  function isGameClosedByDate() {
+    if (!CONFIG.gameEndDate) return false;
+    return Date.now() > new Date(CONFIG.gameEndDate).getTime();
+  }
+
+  let gameEnabled = false;
 
   if (hasPlayed()) {
-    gameIntro.classList.add("hidden");
-    gameAlreadyPlayed.classList.remove("hidden");
     let prev = 0;
     try { prev = parseInt(localStorage.getItem(GAME_KEY_SCORE) || "0", 10); } catch (e) {}
     gameAlreadyScore.textContent = prev;
-    return; // jangan pasang game engine sama sekali kalau sudah pernah main
+    showOverlay(gameAlreadyPlayed);
+  } else if (isGameClosedByDate()) {
+    showOverlay(gameClosed);
+  } else if (!getRsvpName()) {
+    showOverlay(gameNeedName);
+  } else {
+    showOverlay(gameIntro);
+    gameEnabled = true;
   }
+
+  /* ---- Papan peringkat: live update seperti dinding ucapan RSVP ---- */
+  function loadLeaderboard() {
+    const list = document.getElementById("leaderboardList");
+    if (!list) return;
+    if (!window.CONFIG || !CONFIG.scriptURL) {
+      list.innerHTML = '<p class="wishes-empty">Papan peringkat akan tampil setelah backend disambungkan.</p>';
+      return;
+    }
+    fetch(CONFIG.scriptURL + "?action=leaderboard")
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        if (!Array.isArray(data) || !data.length) {
+          list.innerHTML = '<p class="wishes-empty">Belum ada yang main. Jadilah yang pertama!</p>';
+          return;
+        }
+        const top = data.slice(0, (CONFIG.leaderboardTopCount || 10));
+        list.innerHTML = top.map(function (row, i) {
+          return (
+            '<div class="leaderboard-item">' +
+              '<span class="leaderboard-rank">' + (i + 1) + '</span>' +
+              '<span class="leaderboard-name">' + escapeHtmlGame(row.name) + '</span>' +
+              '<span class="leaderboard-score">' + escapeHtmlGame(row.score) + ' poin</span>' +
+            '</div>'
+          );
+        }).join("");
+      })
+      .catch(function () {
+        list.innerHTML = '<p class="wishes-empty">Gagal memuat papan peringkat.</p>';
+      });
+  }
+  function escapeHtmlGame(str) {
+    return String(str == null ? "" : str).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  loadLeaderboard();
+  if (CONFIG.rsvpPollSeconds) {
+    setInterval(loadLeaderboard, CONFIG.rsvpPollSeconds * 1000);
+  }
+
+  if (!gameEnabled) return; // jangan pasang game engine kalau belum boleh main
 
   /* ---------------- Game engine ---------------- */
   const LANES = 3;
@@ -251,8 +338,7 @@
   function startGame() {
     resize();
     resetGame();
-    gameIntro.classList.add("hidden");
-    gameOverEl.classList.add("hidden");
+    showOverlay(null);
     running = true;
     lastTime = 0;
     raf = requestAnimationFrame(loop);
@@ -264,22 +350,19 @@
     const finalScore = Math.floor(score);
     markPlayed(finalScore);
     gameOverScore.textContent = finalScore;
-    gameOverEl.classList.remove("hidden");
+    showOverlay(gameOverEl);
     submitScore(finalScore);
   }
 
   function submitScore(finalScore) {
-    let name = "Tamu";
-    try {
-      const raw = localStorage.getItem("al_rsvp_last_name");
-      if (raw) name = raw;
-    } catch (e) {}
+    const name = getRsvpName() || "Tamu";
     if (window.CONFIG && CONFIG.scriptURL) {
       fetch(CONFIG.scriptURL, {
         method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" },
         body: JSON.stringify({ action: "game_score", name: name, score: finalScore })
       }).catch(function () {});
     }
+    setTimeout(loadLeaderboard, 1200);
   }
 
   /* ---------------- Kontrol ---------------- */
