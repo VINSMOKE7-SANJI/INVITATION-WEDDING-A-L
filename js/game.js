@@ -44,12 +44,8 @@
     try { return localStorage.getItem(RSVP_NAME_KEY) || ""; } catch (e) { return ""; }
   }
 
-  /* ---- Format tanggal tutup game & pengumuman ke teks Indonesia ---- */
   const BULAN_ID = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
   function formatTanggalID(iso) {
-    // Ambil tanggal langsung dari string ISO (YYYY-MM-DD...) supaya tidak
-    // bergeser oleh zona waktu perangkat tamu -- kita cuma perlu tanggal
-    // kalendernya, bukan konversi jam yang presisi.
     const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})/);
     if (!m) return iso;
     const year = m[1], month = parseInt(m[2], 10) - 1, day = parseInt(m[3], 10);
@@ -64,7 +60,6 @@
     if (el && CONFIG.gameAnnounceDate) el.textContent = formatTanggalID(CONFIG.gameAnnounceDate);
   });
 
-  /* ---- Tentukan state awal: sudah main? lewat batas waktu? belum isi RSVP? ---- */
   function isGameClosedByDate() {
     if (!CONFIG.gameEndDate) return false;
     return Date.now() > new Date(CONFIG.gameEndDate).getTime();
@@ -72,21 +67,31 @@
 
   let gameEnabled = false;
 
-  if (hasPlayed()) {
-    let prev = 0;
-    try { prev = parseInt(localStorage.getItem(GAME_KEY_SCORE) || "0", 10); } catch (e) {}
-    gameAlreadyScore.textContent = prev;
-    showOverlay(gameAlreadyPlayed);
-  } else if (isGameClosedByDate()) {
-    showOverlay(gameClosed);
-  } else if (!getRsvpName()) {
-    showOverlay(gameNeedName);
-  } else {
-    showOverlay(gameIntro);
-    gameEnabled = true;
+  function refreshGateState() {
+    if (hasPlayed()) {
+      let prev = 0;
+      try { prev = parseInt(localStorage.getItem(GAME_KEY_SCORE) || "0", 10); } catch (e) {}
+      gameAlreadyScore.textContent = prev;
+      showOverlay(gameAlreadyPlayed);
+      gameEnabled = false;
+    } else if (isGameClosedByDate()) {
+      showOverlay(gameClosed);
+      gameEnabled = false;
+    } else if (!getRsvpName()) {
+      showOverlay(gameNeedName);
+      gameEnabled = false;
+    } else {
+      showOverlay(gameIntro);
+      gameEnabled = true;
+    }
   }
+  refreshGateState();
 
-  /* ---- Papan peringkat: live update seperti dinding ucapan RSVP ---- */
+  // Begitu RSVP berhasil dikirim (event dari js/script.js), evaluasi ulang
+  // gerbang game ini -- ini yang memperbaiki bug "sudah isi RSVP tapi game
+  // masih minta isi RSVP" karena sebelumnya status ini cuma dicek sekali.
+  window.addEventListener("al:rsvp-submitted", refreshGateState);
+
   function loadLeaderboard() {
     const list = document.getElementById("leaderboardList");
     if (!list) return;
@@ -126,16 +131,13 @@
     setInterval(loadLeaderboard, CONFIG.rsvpPollSeconds * 1000);
   }
 
-  if (!gameEnabled) return; // jangan pasang game engine kalau belum boleh main
-
-  /* ---------------- Game engine ---------------- */
   const LANES = 3;
   let W = 360, H = 560;
   let laneW = W / LANES;
 
   function resize() {
     const rect = canvas.parentElement.getBoundingClientRect();
-    if (!rect.width) return; // section masih tersembunyi (belum dibuka) -- jangan set ukuran 0
+    if (!rect.width) return;
     W = Math.min(rect.width, 480);
     H = Math.round(W * 1.55);
     canvas.width = W * devicePixelRatio;
@@ -146,14 +148,9 @@
     laneW = W / LANES;
   }
   window.addEventListener("resize", resize);
-  // #main disembunyikan (display:none) sampai undangan dibuka, jadi ukuran
-  // canvas belum bisa dihitung saat script ini pertama jalan. Ukur ulang
-  // begitu tombol "Buka Undangan" diklik dan konten sudah benar-benar tampil.
   const openBtnEl = document.getElementById("openBtn");
   if (openBtnEl) {
-    openBtnEl.addEventListener("click", function () {
-      setTimeout(resize, 400);
-    });
+    openBtnEl.addEventListener("click", function () { setTimeout(resize, 400); });
   }
 
   let running = false;
@@ -171,22 +168,15 @@
   function laneX(lane) { return laneW * lane + laneW / 2; }
 
   function resetGame() {
-    score = 0;
-    speed = 4.2;
-    elapsed = 0;
-    obstacles = [];
-    coins = [];
-    spawnTimer = 0;
-    coinTimer = 0;
-    player.lane = 1;
-    player.jumping = false;
-    player.jumpT = 0;
+    score = 0; speed = 4.2; elapsed = 0;
+    obstacles = []; coins = []; spawnTimer = 0; coinTimer = 0;
+    player.lane = 1; player.jumping = false; player.jumpT = 0;
     scoreEl.textContent = "0";
   }
 
   function spawnObstacle() {
     const lane = Math.floor(Math.random() * LANES);
-    const type = Math.random() < 0.28 ? "low" : "block"; // "low" = harus lompat
+    const type = Math.random() < 0.28 ? "low" : "block";
     obstacles.push({ lane: lane, y: -60, type: type, passed: false });
   }
   function spawnCoin() {
@@ -197,18 +187,12 @@
   function update(dt) {
     elapsed += dt;
     speed = Math.min(4.2 + elapsed * 0.06, 11);
-    score += dt * 6; // skor bertambah seiring jarak
+    score += dt * 6;
 
     spawnTimer -= dt;
-    if (spawnTimer <= 0) {
-      spawnObstacle();
-      spawnTimer = Math.max(1.5 - elapsed * 0.01, 0.65);
-    }
+    if (spawnTimer <= 0) { spawnObstacle(); spawnTimer = Math.max(1.5 - elapsed * 0.01, 0.65); }
     coinTimer -= dt;
-    if (coinTimer <= 0) {
-      spawnCoin();
-      coinTimer = 1.1;
-    }
+    if (coinTimer <= 0) { spawnCoin(); coinTimer = 1.1; }
 
     obstacles.forEach(function (o) { o.y += speed; });
     coins.forEach(function (c) { c.y += speed; });
@@ -221,25 +205,17 @@
     }
 
     const playerY = H - 90;
-    // tabrakan
     for (let i = 0; i < obstacles.length; i++) {
       const o = obstacles[i];
       if (o.lane !== player.lane) continue;
       if (Math.abs(o.y - playerY) < 30) {
         const overJump = player.jumping && o.type === "low";
-        if (!overJump) {
-          gameOver();
-          return;
-        }
+        if (!overJump) { gameOver(); return; }
       }
     }
-    // koin
     coins.forEach(function (c) {
       if (c.taken) return;
-      if (c.lane === player.lane && Math.abs(c.y - playerY) < 28) {
-        c.taken = true;
-        score += 15;
-      }
+      if (c.lane === player.lane && Math.abs(c.y - playerY) < 28) { c.taken = true; score += 15; }
     });
 
     scoreEl.textContent = Math.floor(score);
@@ -247,8 +223,6 @@
 
   function draw() {
     ctx.clearRect(0, 0, W, H);
-
-    // jalur
     ctx.fillStyle = "#3a1416";
     ctx.fillRect(0, 0, W, H);
     for (let i = 1; i < LANES; i++) {
@@ -262,7 +236,6 @@
     }
     ctx.setLineDash([]);
 
-    // koin
     coins.forEach(function (c) {
       if (c.taken) return;
       ctx.beginPath();
@@ -274,7 +247,6 @@
       ctx.stroke();
     });
 
-    // rintangan
     obstacles.forEach(function (o) {
       const x = laneX(o.lane);
       if (o.type === "low") {
@@ -289,7 +261,6 @@
       }
     });
 
-    // pemain
     const px = laneX(player.lane);
     let py = H - 90;
     let scale = 1;
@@ -313,7 +284,6 @@
     ctx.strokeStyle = "#b8843c";
     ctx.lineWidth = 3;
     ctx.stroke();
-    // wajah simpel
     ctx.fillStyle = "#3a2115";
     ctx.beginPath(); ctx.arc(px - 6, py - 3, 2.4, 0, Math.PI * 2); ctx.fill();
     ctx.beginPath(); ctx.arc(px + 6, py - 3, 2.4, 0, Math.PI * 2); ctx.fill();
@@ -329,13 +299,12 @@
     const dt = Math.min((ts - lastTime) / 1000, 0.05);
     lastTime = ts;
     update(dt);
-    if (running) {
-      draw();
-      raf = requestAnimationFrame(loop);
-    }
+    if (running) { draw(); raf = requestAnimationFrame(loop); }
   }
 
   function startGame() {
+    refreshGateState();
+    if (!gameEnabled) return;
     resize();
     resetGame();
     showOverlay(null);
@@ -365,7 +334,6 @@
     setTimeout(loadLeaderboard, 1200);
   }
 
-  /* ---------------- Kontrol ---------------- */
   function moveLeft() { if (player.lane > 0) player.lane--; }
   function moveRight() { if (player.lane < LANES - 1) player.lane++; }
   function jump() { if (!player.jumping) { player.jumping = true; player.jumpT = 0; } }
@@ -398,10 +366,6 @@
   }, { passive: true });
 
   startBtn.addEventListener("click", startGame);
-  document.getElementById("gameRetryBtn")?.addEventListener("click", function () {
-    // hanya boleh main sekali seumur hidup per perangkat -- tombol ini
-    // sengaja tidak memulai ulang, cukup tampilkan pesan.
-  });
 
   fullscreenBtn.addEventListener("click", function () {
     if (!document.fullscreenElement) {
