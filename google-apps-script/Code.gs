@@ -4,13 +4,17 @@
  * Cara pakai singkat (lengkapnya ada di README.md):
  * 1. Buat Google Sheet baru. Tab-tab di bawah ini akan dibuat OTOMATIS oleh
  *    skrip ini saat pertama kali dipakai -- tidak perlu dibuat manual.
- *      - "RSVP"      : Timestamp | Nama | Kehadiran | JumlahTamu | Ucapan | WA_Target
+ *      - "RSVP"      : Timestamp | Nama | Kehadiran | JumlahTamu | Ucapan
  *      - "GameScore" : Timestamp | Nama | Skor
  * 2. Buka Extensions > Apps Script, hapus isi default, tempel semua isi file ini.
  * 3. Klik Deploy > New deployment > Web app.
  *    - Execute as: Me
  *    - Who has access: Anyone
  * 4. Salin URL yang dihasilkan (.../exec) ke variabel scriptURL di js/config.js
+ *
+ * Catatan privasi: data RSVP (nama, kehadiran, ucapan) HANYA tersimpan di
+ * Google Sheet ini. Tidak ada nomor WhatsApp tamu yang diminta atau
+ * disimpan di mana pun oleh website ini.
  * =========================================================
  */
 
@@ -36,27 +40,14 @@ function doPost(e) {
   }
 
   if (payload.action === "rsvp") {
-    const sheet = getSheet_(SHEET_RSVP, ["Timestamp", "Nama", "Kehadiran", "JumlahTamu", "Ucapan", "WA_Target"]);
+    const sheet = getSheet_(SHEET_RSVP, ["Timestamp", "Nama", "Kehadiran", "JumlahTamu", "Ucapan"]);
     sheet.appendRow([
       new Date(),
       payload.name || "",
       payload.attend || "",
       payload.guests || "",
-      payload.message || "",
-      "" // WA_Target kosong dulu, diisi saat tombol WA diklik
+      payload.message || ""
     ]);
-    return jsonResponse_({ ok: true });
-  }
-
-  if (payload.action === "wa_choice") {
-    const sheet = getSheet_(SHEET_RSVP, ["Timestamp", "Nama", "Kehadiran", "JumlahTamu", "Ucapan", "WA_Target"]);
-    const data = sheet.getDataRange().getValues();
-    for (let r = data.length - 1; r >= 1; r--) {
-      if (data[r][1] === payload.name) {
-        sheet.getRange(r + 1, 6).setValue(payload.wa_target || "");
-        break;
-      }
-    }
     return jsonResponse_({ ok: true });
   }
 
@@ -73,11 +64,9 @@ function doGet(e) {
   const action = e.parameter.action;
 
   if (action === "list") {
-    const sheet = getSheet_(SHEET_RSVP, ["Timestamp", "Nama", "Kehadiran", "JumlahTamu", "Ucapan", "WA_Target"]);
+    const sheet = getSheet_(SHEET_RSVP, ["Timestamp", "Nama", "Kehadiran", "JumlahTamu", "Ucapan"]);
     const data = sheet.getDataRange().getValues();
     const rows = [];
-    // lewati header (baris 0). Sengaja TIDAK menyertakan kolom WA_Target
-    // supaya nomor WA yang dipilih tamu tidak tampil di RSVP wall publik.
     for (let r = 1; r < data.length; r++) {
       const [, name, attend, guests, message] = data[r];
       if (!name) continue;
