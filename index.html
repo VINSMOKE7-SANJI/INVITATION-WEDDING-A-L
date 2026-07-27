@@ -58,6 +58,25 @@
     <a href="#rsvp" data-label="RSVP"></a>
   </nav>
 
+  <!-- menu navigasi kiri atas (bisa difilter, klik untuk lompat ke halaman) -->
+  <button id="navMenuBtn" class="nav-menu-btn" aria-label="Buka menu navigasi">
+    <span></span><span></span><span></span>
+  </button>
+  <div id="navMenuPanel" class="nav-menu-panel hidden">
+    <input type="text" id="navFilterInput" class="nav-filter-input" placeholder="Cari halaman...">
+    <ul class="nav-menu-list" id="navMenuList">
+      <li><a href="#hero" data-title="Beranda">Beranda</a></li>
+      <li><a href="#mempelai" data-title="Mempelai">Mempelai</a></li>
+      <li><a href="#acara" data-title="Waktu & Tempat">Waktu &amp; Tempat</a></li>
+      <li><a href="#kenangan" data-title="Video Kenangan">Video Kenangan</a></li>
+      <li><a href="#galeri" data-title="Galeri">Galeri</a></li>
+      <li><a href="#kado" data-title="Kirim Kado">Kirim Kado</a></li>
+      <li><a href="#rsvp" data-title="RSVP & Ucapan">RSVP &amp; Ucapan</a></li>
+      <li><a href="#gameSection" data-title="Main Game">Main Game</a></li>
+    </ul>
+    <p class="nav-empty hidden" id="navEmptyMsg">Tidak ditemukan.</p>
+  </div>
+
   <!-- music toggle -->
   <button id="musicBtn" class="music-btn" aria-label="Putar musik">
     <span class="music-disc"></span>
@@ -326,12 +345,7 @@
           <!-- shown after successful submit -->
           <div id="rsvpThanks" class="rsvp-thanks hidden">
             <p class="rsvp-thanks-title">Terima kasih atas doa &amp; konfirmasinya&#33;</p>
-            <p class="rsvp-thanks-sub">Sampaikan juga konfirmasi Anda langsung melalui WhatsApp kepada:</p>
-            <div class="wa-choices">
-              <button class="btn-wa btn-bounce-x" data-wa="alfa" data-phone="6281247770168"><span>Alfa</span><i class="arrow-right">&#8594;</i></button>
-              <button class="btn-wa btn-bounce-x" data-wa="lenny" data-phone="6285859866900"><span>Lenny</span><i class="arrow-right">&#8594;</i></button>
-            </div>
-            <p class="rsvp-done-note hidden" id="rsvpDoneNote">Konfirmasi Anda sudah tercatat. Terima kasih 🤍</p>
+            <p class="rsvp-thanks-sub">Konfirmasi kehadiran dan ucapan Anda sudah kami terima. Sampai jumpa di hari bahagia kami! 🤍</p>
           </div>
 
           <!-- shown on repeat visits from the same device, instead of the form -->
