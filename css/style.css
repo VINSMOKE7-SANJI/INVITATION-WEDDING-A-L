@@ -105,8 +105,55 @@ img { max-width: 100%; display: block; }
 .btn-open:hover { background: var(--maroon); color: var(--cream); }
 
 /* =========================================================
-   FLOATING NAV DOTS
+   MENU NAVIGASI KIRI ATAS (filter + klik ke halaman)
    ========================================================= */
+.nav-menu-btn {
+  position: fixed; top: 18px; left: 18px; z-index: 70;
+  width: 46px; height: 46px; border-radius: 50%;
+  border: 1px solid var(--gold); background: rgba(20,8,8,0.55);
+  backdrop-filter: blur(6px);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  cursor: pointer;
+}
+.nav-menu-btn span { display: block; width: 20px; height: 2px; background: var(--gold-light); border-radius: 2px; transition: transform 0.25s ease, opacity 0.25s ease; }
+.nav-menu-btn.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.nav-menu-btn.open span:nth-child(2) { opacity: 0; }
+.nav-menu-btn.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+.nav-menu-panel {
+  position: fixed; top: 72px; left: 18px; z-index: 69;
+  width: min(78vw, 260px);
+  background: rgba(20,8,8,0.88); backdrop-filter: blur(10px);
+  border: 1px solid rgba(217,183,108,0.4); border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+  transform-origin: top left;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+.nav-menu-panel.hidden { display: none; }
+
+.nav-filter-input {
+  width: 100%; padding: 9px 12px; margin-bottom: 10px;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(217,183,108,0.4);
+  color: var(--text-light); font-family: var(--font-body); font-size: 13px; border-radius: 999px;
+}
+.nav-filter-input::placeholder { color: var(--text-light-dim); }
+.nav-filter-input:focus { outline: none; border-color: var(--gold); }
+
+.nav-menu-list { list-style: none; margin: 0; padding: 0; max-height: 320px; overflow-y: auto; }
+.nav-menu-list li + li { margin-top: 2px; }
+.nav-menu-list a {
+  display: block; padding: 9px 10px; border-radius: 6px;
+  color: var(--text-light-dim); text-decoration: none; font-family: var(--font-serif); font-size: 15px;
+  border-left: 2px solid transparent;
+}
+.nav-menu-list a:hover, .nav-menu-list li.active a {
+  background: rgba(217,183,108,0.12); color: var(--gold-light); border-left-color: var(--gold);
+}
+.nav-empty { text-align: center; font-size: 12px; color: var(--text-light-dim); margin: 10px 0 0; }
+.nav-empty.hidden { display: none; }
+
+
 .dotnav { position: fixed; right: 18px; top: 50%; transform: translateY(-50%); z-index: 60; display: flex; flex-direction: column; gap: 14px; }
 .dotnav a { position: relative; width: 8px; height: 8px; border-radius: 50%; background: rgba(107,31,33,0.25); border: 1px solid var(--maroon); }
 .dotnav a.active { background: var(--maroon); }
@@ -179,31 +226,33 @@ img { max-width: 100%; display: block; }
 }
 
 /* =========================================================
-   VIDEO BACKGROUND ZONE (poin 3)
+   VIDEO BACKGROUND ZONE -- bingkai ornamen hijau-emas (poin 3)
+   Dipakai object-fit:contain (bukan cover) supaya ke-4 sisi bingkai
+   SELALU utuh terlihat, tidak pernah terpotong di layar mana pun --
+   area di luar video otomatis hitam (sama seperti latar videonya)
+   jadi tidak kelihatan seperti letterbox.
    ========================================================= */
 .video-zone { position: relative; }
 .video-sticky {
   position: sticky; top: 0; height: 100svh; z-index: 0;
   margin-bottom: calc(-1 * 100svh);
   overflow: hidden;
-  background: var(--maroon-deep);
+  background: #06120e;
 }
 .video-sticky video {
-  width: 100%; height: 100%; object-fit: cover;
-  filter: saturate(0.85) sepia(0.12) hue-rotate(-6deg) brightness(0.96);
+  width: 100%; height: 100%; object-fit: contain;
 }
 .video-tint {
   position: absolute; inset: 0; pointer-events: none;
   background: linear-gradient(180deg,
-    rgba(247,238,220,0.35) 0%,
-    rgba(236,217,194,0.25) 18%,
-    rgba(107,31,33,0.18) 40%,
-    rgba(95,19,21,0.45) 65%,
-    rgba(74,15,17,0.75) 100%);
+    rgba(6,18,14,0.25) 0%,
+    rgba(6,18,14,0.05) 12%,
+    rgba(6,18,14,0.05) 88%,
+    rgba(6,18,14,0.35) 100%);
 }
 .video-fallback {
   position: absolute; inset: 0;
-  background: linear-gradient(180deg, var(--cream), var(--cream-2) 35%, var(--maroon-mid) 70%, var(--maroon-deep));
+  background: linear-gradient(180deg, #0c1f18, #06120e 60%, #06120e);
   opacity: 0; transition: opacity 0.4s ease;
 }
 .video-zone.video-failed .video-fallback { opacity: 1; }
@@ -402,14 +451,6 @@ img { max-width: 100%; display: block; }
 .rsvp-thanks { border: 1px solid rgba(217,183,108,0.4); padding: 30px 20px; margin-top: 10px; }
 .rsvp-thanks-title { font-family: var(--font-serif); font-size: 19px; color: var(--gold-light); margin: 0 0 8px; }
 .rsvp-thanks-sub { font-size: 13px; color: var(--text-light-dim); margin: 0 0 18px; }
-.rsvp-done-note { font-size: 13px; color: var(--gold-light); margin: 16px 0 0; font-style: italic; }
-.wa-choices { display: flex; gap: 12px; justify-content: center; }
-.btn-wa {
-  display: inline-flex; align-items: center; justify-content: center; flex: 1; max-width: 160px; padding: 12px;
-  background: transparent; border: 1px solid var(--gold); color: var(--text-light);
-  border-radius: 999px; font-family: var(--font-body); font-size: 13px; cursor: pointer;
-}
-.btn-wa:hover { background: var(--gold); color: var(--maroon-deep); }
 
 .wishes-wall { margin-top: 60px; text-align: left; }
 .wishes-wall h3 { font-family: var(--font-serif); text-align: center; font-size: 20px; color: var(--text-light); margin-bottom: 22px; }
