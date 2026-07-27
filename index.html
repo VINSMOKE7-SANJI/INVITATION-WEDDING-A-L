@@ -194,6 +194,20 @@
       <!-- ===== DARK TINT ZONE: GALERI / KADO / RSVP ===== -->
       <div class="dark-zone">
 
+      <!-- ===== VIDEO KENANGAN (sebelum galeri foto) ===== -->
+      <section id="kenangan" class="section memories-section">
+        <div class="glass-card-dark">
+          <p class="eyebrow reveal">Sebelum Galeri Foto</p>
+          <h2 class="section-title reveal">Video Kenangan</h2>
+          <p class="memories-desc reveal">Sepenggal cerita perjalanan kami, sebelum melihat momen-momen di galeri foto.</p>
+        </div>
+        <div class="memories-player reveal">
+          <video id="memoriesVideo" controls playsinline preload="metadata" poster="assets/images/cover.jpg">
+            <source src="assets/memories.mp4" type="video/mp4">
+          </video>
+        </div>
+      </section>
+
       <!-- ===== GALERI (marquee 3 baris + 3 paragraf makna pernikahan) ===== -->
       <section id="galeri" class="section gallery-section">
         <div class="glass-card-dark">
@@ -361,7 +375,9 @@
     <p class="eyebrow reveal">Main Yuk, Sebelum Pulang</p>
     <h2 class="section-title reveal">Tantangan Skor Terbaik</h2>
     <p class="game-desc reveal">Hindari rintangan, kumpulkan koin sebanyak mungkin! Skor tertinggi akan
-      mendapat hadiah spesial dari kami. <strong>Setiap tamu hanya bisa main satu kali</strong>, jadi pastikan fokus ya.</p>
+      mendapat hadiah spesial dari kami. <strong>Setiap tamu hanya bisa main satu kali</strong>,
+      dan permainan ditutup <strong id="gameEndDateText">23 Oktober 2026</strong>.
+      Pemenang diumumkan <strong id="gameAnnounceDateText">28 Oktober 2026</strong>.</p>
 
     <div class="game-stage" id="gameStage">
       <div class="game-topbar">
@@ -372,10 +388,31 @@
       <div class="game-canvas-wrap">
         <canvas id="gameCanvas"></canvas>
 
-        <div class="game-overlay" id="gameIntro">
+        <!-- tutorial + mulai (tampil kalau nama RSVP sudah ada & masih dalam periode main) -->
+        <div class="game-overlay hidden" id="gameIntro">
           <p class="game-overlay-title">Siap Berlari?</p>
-          <p class="game-overlay-sub">Geser kiri/kanan untuk pindah jalur, geser ke atas untuk lompat.</p>
+          <div class="game-tutorial">
+            <div class="game-tutorial-step"><span class="tstep-icon">&#8592;&#8594;</span>Geser / tap kiri-kanan untuk pindah jalur</div>
+            <div class="game-tutorial-step"><span class="tstep-icon">&#8593;</span>Geser ke atas / tap lompat untuk melewati rintangan rendah</div>
+            <div class="game-tutorial-step"><span class="tstep-icon">&#9679;</span>Kumpulkan koin emas untuk tambahan skor</div>
+            <div class="game-tutorial-step"><span class="tstep-icon">&#10060;</span>Menabrak rintangan = permainan selesai</div>
+          </div>
           <button class="btn-submit btn-bounce-x" id="gameStartBtn"><span>Mulai Main</span><i class="arrow-right">&#8594;</i></button>
+        </div>
+
+        <!-- gerbang: minta isi RSVP dulu supaya nama pemain konsisten dgn RSVP -->
+        <div class="game-overlay hidden" id="gameNeedName">
+          <p class="game-overlay-title">Isi RSVP Dulu Yuk</p>
+          <p class="game-overlay-sub">Supaya nama kamu di papan peringkat sesuai dengan konfirmasi kehadiran,
+            isi form RSVP di atas terlebih dahulu sebelum main game.</p>
+          <a href="#rsvp" class="btn-submit btn-bounce-x" id="gameGotoRsvpBtn"><span>Isi RSVP</span><i class="arrow-right">&#8594;</i></a>
+        </div>
+
+        <!-- periode main sudah lewat -->
+        <div class="game-overlay hidden" id="gameClosed">
+          <p class="game-overlay-title">Permainan Sudah Ditutup</p>
+          <p class="game-overlay-sub">Periode bermain sudah berakhir. Nantikan pengumuman pemenangnya pada
+            <strong id="gameAnnounceDateText2">28 Oktober 2026</strong>!</p>
         </div>
 
         <div class="game-overlay hidden" id="gameOver">
@@ -395,6 +432,14 @@
         <button class="game-ctrl-btn" id="gameBtnLeft" aria-label="Kiri">&#8592;</button>
         <button class="game-ctrl-btn game-ctrl-jump" id="gameBtnJump" aria-label="Lompat">&#8593;</button>
         <button class="game-ctrl-btn" id="gameBtnRight" aria-label="Kanan">&#8594;</button>
+      </div>
+    </div>
+
+    <!-- papan peringkat, live update seperti dinding ucapan RSVP -->
+    <div class="leaderboard-wall">
+      <h3>Papan Peringkat</h3>
+      <div id="leaderboardList" class="leaderboard-list">
+        <p class="wishes-empty">Memuat papan peringkat&hellip;</p>
       </div>
     </div>
   </section>
