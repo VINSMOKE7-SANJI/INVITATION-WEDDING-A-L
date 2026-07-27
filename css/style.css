@@ -211,17 +211,22 @@ img { max-width: 100%; display: block; }
 .video-content { position: relative; z-index: 1; }
 
 .glass-card {
-  background: rgba(247,238,220,0.82);
-  backdrop-filter: blur(3px);
-  border: 1px solid rgba(184,132,60,0.4);
+  background: rgba(247,238,220,0.38);
+  backdrop-filter: blur(9px) saturate(1.1);
+  -webkit-backdrop-filter: blur(9px) saturate(1.1);
+  border: 1px solid rgba(184,132,60,0.45);
   padding: 34px 22px;
 }
 .glass-card-dark {
-  background: rgba(58,15,17,0.68);
-  backdrop-filter: blur(3px);
-  border: 1px solid rgba(217,183,108,0.3);
+  background: rgba(40,12,13,0.34);
+  backdrop-filter: blur(9px) saturate(1.1);
+  -webkit-backdrop-filter: blur(9px) saturate(1.1);
+  border: 1px solid rgba(217,183,108,0.35);
   padding: 26px 20px;
 }
+/* insurance tipis biar teks tetap kebaca walau video di baliknya ramai */
+.glass-card *, .glass-card-dark * { text-shadow: 0 1px 4px rgba(0,0,0,0.18); }
+.glass-card-dark * { text-shadow: 0 1px 5px rgba(0,0,0,0.45); }
 
 /* =========================================================
    QUOTE / MONOGRAM
@@ -467,6 +472,46 @@ img { max-width: 100%; display: block; }
 .game-overlay-title { font-family: var(--font-serif); font-size: 24px; color: var(--text-light); margin: 0 0 10px; }
 .game-overlay-sub { font-size: 13px; color: var(--text-light-dim); margin: 0 0 18px; max-width: 260px; }
 .game-overlay-note { font-size: 12px; color: var(--gold-light); margin-top: 14px; max-width: 260px; }
+
+.game-tutorial { display: flex; flex-direction: column; gap: 10px; margin: 6px 0 22px; max-width: 280px; }
+.game-tutorial-step {
+  display: flex; align-items: center; gap: 10px; text-align: left;
+  font-size: 12.5px; color: var(--text-light-dim); line-height: 1.4;
+}
+.tstep-icon {
+  flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%;
+  border: 1px solid var(--gold); color: var(--gold-light);
+  display: flex; align-items: center; justify-content: center; font-size: 13px;
+}
+
+.leaderboard-wall { max-width: 420px; margin: 46px auto 0; text-align: left; }
+.leaderboard-wall h3 { font-family: var(--font-serif); text-align: center; font-size: 20px; color: var(--text-light); margin-bottom: 22px; }
+.leaderboard-list { display: flex; flex-direction: column; gap: 8px; }
+.leaderboard-item {
+  display: flex; align-items: center; gap: 12px;
+  border-left: 2px solid var(--gold); padding: 9px 14px; background: rgba(217,183,108,0.06);
+}
+.leaderboard-rank {
+  flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%;
+  background: var(--gold); color: var(--maroon-deep); font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; font-family: var(--font-serif);
+}
+.leaderboard-item:nth-child(1) .leaderboard-rank { background: #f0d98c; }
+.leaderboard-item:nth-child(2) .leaderboard-rank { background: #d9c7b0; }
+.leaderboard-item:nth-child(3) .leaderboard-rank { background: #c98f5e; }
+.leaderboard-name { flex: 1; font-family: var(--font-serif); font-size: 14.5px; color: var(--gold-light); }
+.leaderboard-score { font-size: 13px; color: var(--text-light-dim); }
+
+/* =========================================================
+   VIDEO KENANGAN (sebelum galeri)
+   ========================================================= */
+.memories-desc { color: var(--text-light-dim); font-size: 13.5px; line-height: 1.7; }
+.memories-player {
+  max-width: 420px; margin: 26px auto 0; border: 1px solid rgba(217,183,108,0.4);
+  border-radius: 10px; overflow: hidden; background: #000;
+}
+.memories-player video { width: 100%; display: block; max-height: 70vh; }
+
 
 .game-controls { display: flex; justify-content: center; gap: 16px; margin-top: 14px; }
 .game-ctrl-btn {
