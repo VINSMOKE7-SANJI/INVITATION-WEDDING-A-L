@@ -58,6 +58,49 @@
     });
   }
 
+  /* ---------- Menu navigasi kiri atas (filter + klik ke halaman) ---------- */
+  const navMenuBtn = document.getElementById("navMenuBtn");
+  const navMenuPanel = document.getElementById("navMenuPanel");
+  const navFilterInput = document.getElementById("navFilterInput");
+  const navMenuItems = Array.from(document.querySelectorAll("#navMenuList li"));
+  const navEmptyMsg = document.getElementById("navEmptyMsg");
+
+  navMenuBtn.addEventListener("click", function () {
+    const willOpen = navMenuPanel.classList.contains("hidden");
+    navMenuPanel.classList.toggle("hidden", !willOpen);
+    navMenuBtn.classList.toggle("open", willOpen);
+    if (willOpen) { navFilterInput.value = ""; filterNavItems(""); navFilterInput.focus(); }
+  });
+
+  document.addEventListener("click", function (e) {
+    if (!navMenuPanel.classList.contains("hidden") &&
+        !navMenuPanel.contains(e.target) && e.target !== navMenuBtn && !navMenuBtn.contains(e.target)) {
+      navMenuPanel.classList.add("hidden");
+      navMenuBtn.classList.remove("open");
+    }
+  });
+
+  navMenuItems.forEach(function (li) {
+    const a = li.querySelector("a");
+    a.addEventListener("click", function () {
+      navMenuPanel.classList.add("hidden");
+      navMenuBtn.classList.remove("open");
+    });
+  });
+
+  function filterNavItems(q) {
+    const query = q.trim().toLowerCase();
+    let visibleCount = 0;
+    navMenuItems.forEach(function (li) {
+      const title = li.querySelector("a").getAttribute("data-title").toLowerCase();
+      const match = !query || title.indexOf(query) > -1;
+      li.classList.toggle("hidden", !match);
+      if (match) visibleCount++;
+    });
+    navEmptyMsg.classList.toggle("hidden", visibleCount > 0);
+  }
+  navFilterInput.addEventListener("input", function () { filterNavItems(navFilterInput.value); });
+
   /* ---------- Dot navigation active state ---------- */
   const dotLinks = document.querySelectorAll("#dotnav a");
   const sections = Array.from(dotLinks).map(function (a) {
@@ -203,8 +246,6 @@
   const rsvpSubmitBtn = document.getElementById("rsvpSubmitBtn");
   const rsvpThanks = document.getElementById("rsvpThanks");
   const rsvpAlready = document.getElementById("rsvpAlready");
-  const rsvpDoneNote = document.getElementById("rsvpDoneNote");
-  const rsvpWaChoices = document.querySelector(".wa-choices");
   let lastRsvp = null;
 
   function alreadySubmitted() {
@@ -239,12 +280,15 @@
       .then(function () {
         markSubmitted();
         try { localStorage.setItem("al_rsvp_last_name", name); } catch (e) {}
+        window.dispatchEvent(new CustomEvent("al:rsvp-submitted", { detail: { name: name } }));
         rsvpForm.classList.add("hidden");
         rsvpThanks.classList.remove("hidden");
         loadWishes();
       })
       .catch(function () {
         markSubmitted();
+        try { localStorage.setItem("al_rsvp_last_name", name); } catch (e) {}
+        window.dispatchEvent(new CustomEvent("al:rsvp-submitted", { detail: { name: name } }));
         rsvpForm.classList.add("hidden");
         rsvpThanks.classList.remove("hidden");
       })
@@ -252,25 +296,6 @@
         rsvpSubmitBtn.disabled = false;
         rsvpSubmitBtn.querySelector("span").textContent = "Kirim Konfirmasi";
       });
-  });
-
-  document.querySelectorAll(".btn-wa").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      const phone = btn.getAttribute("data-phone");
-      const who = btn.getAttribute("data-wa");
-      const name = lastRsvp ? lastRsvp.name : "";
-      const attend = lastRsvp ? lastRsvp.attend : "";
-      const text = encodeURIComponent(
-        "Assalamualaikum/Salam sejahtera, saya " + name +
-        " ingin mengonfirmasi kehadiran (" + attend + ") pada pernikahan Alfa & Lenny."
-      );
-      sendToSheet({ action: "wa_choice", name: name, wa_target: who }).catch(function () {});
-      window.open("https://wa.me/" + phone + "?text=" + text, "_blank");
-
-      // langkah WA selesai -- sembunyikan pilihan tombol, tampilkan catatan selesai
-      if (rsvpWaChoices) rsvpWaChoices.classList.add("hidden");
-      if (rsvpDoneNote) rsvpDoneNote.classList.remove("hidden");
-    });
   });
 
   /* ---------- Backend (Google Apps Script) ---------- */
