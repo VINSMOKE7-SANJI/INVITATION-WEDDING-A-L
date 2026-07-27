@@ -21,7 +21,7 @@ const CONFIG = {
   // URL Web App Google Apps Script (lihat google-apps-script/Code.gs & README.md)
   // Setelah deploy, tempel URL-nya di sini, contoh:
   // "https://script.google.com/macros/s/AKfycb.../exec"
-  scriptURL: "https://script.google.com/macros/s/AKfycbxKRWeJDz96k9IuSM_4BFyB2EG4mB3j0hmBnwMqGFvA9nVvTHd67jJ_jI9e-Hd_pXEZrw/exec",
+  scriptURL: "",
 
   // Berapa kali RSVP+stats dicek ulang otomatis (tanpa refresh), dalam detik.
   rsvpPollSeconds: 15,
@@ -40,5 +40,15 @@ const CONFIG = {
   liveStreamingURL: "",
 
   // Footer iklan "Order Undangan Digital" -- nomor WhatsApp tujuan.
-  footerAdWhatsApp: "6281246211461"
+  footerAdWhatsApp: "6281246211461",
+
+  // Batas terakhir tamu boleh main game (setelah tanggal ini, game ditutup
+  // otomatis meskipun tamu belum pernah main). Format sama seperti weddingDateTime.
+  gameEndDate: "2026-10-23T23:59:59+07:00",
+
+  // Tanggal pengumuman pemenang skor terbaik (cuma ditampilkan sebagai info teks).
+  gameAnnounceDate: "2026-10-28T00:00:00+07:00",
+
+  // Jumlah nama teratas yang ditampilkan di papan peringkat game.
+  leaderboardTopCount: 10
 };
