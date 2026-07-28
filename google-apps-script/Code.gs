@@ -52,7 +52,7 @@ function doPost(e) {
   }
 
   if (payload.action === "game_score") {
-    const sheet = getSheet_(SHEET_GAME, ["Timestamp", "Nama", "Skor"]);
+    const sheet = getSheet_(SHEET_GameScore, ["Timestamp", "Nama", "Skor"]);
     sheet.appendRow([new Date(), payload.name || "Tamu", payload.score || 0]);
     return jsonResponse_({ ok: true });
   }
@@ -76,7 +76,7 @@ function doGet(e) {
   }
 
   if (action === "leaderboard") {
-    const sheet = getSheet_(SHEET_GAME, ["Timestamp", "Nama", "Skor"]);
+    const sheet = getSheet_(SHEET_GameScore, ["Timestamp", "Nama", "Skor"]);
     const data = sheet.getDataRange().getValues();
     const rows = [];
     for (let r = 1; r < data.length; r++) {
