@@ -166,19 +166,23 @@ img { max-width: 100%; display: block; }
 @media (max-width: 640px) { .dotnav { display: none; } }
 
 /* =========================================================
-   MUSIC BUTTON
+   MUSIC BUTTON -- ikon speaker beda jelas antara nyala/mati
    ========================================================= */
 .music-btn {
   position: fixed; left: 18px; bottom: 18px; z-index: 60; width: 46px; height: 46px; border-radius: 50%;
   border: 1px solid var(--maroon); background: var(--paper); display: flex; align-items: center; justify-content: center; cursor: pointer;
+  transition: background 0.25s ease, border-color 0.25s ease;
 }
-.music-disc {
-  width: 20px; height: 20px; border-radius: 50%;
-  background: radial-gradient(circle at center, var(--paper) 0 3px, var(--maroon) 4px 100%);
-  animation: spin 4s linear infinite; animation-play-state: paused;
+.music-btn .icon-sound-on,
+.music-btn .icon-sound-off {
+  position: absolute; color: var(--maroon);
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
-.music-btn.playing .music-disc { animation-play-state: running; }
-@keyframes spin { to { transform: rotate(360deg); } }
+.music-btn .icon-sound-on { opacity: 0; transform: scale(0.7); }
+.music-btn .icon-sound-off { opacity: 1; transform: scale(1); }
+.music-btn.playing { background: var(--maroon); border-color: var(--gold); }
+.music-btn.playing .icon-sound-on { opacity: 1; transform: scale(1); color: var(--gold-light); }
+.music-btn.playing .icon-sound-off { opacity: 0; transform: scale(0.7); }
 
 /* =========================================================
    SECTION SHARED
@@ -306,6 +310,7 @@ img { max-width: 100%; display: block; }
 .float-anim { animation: floatY 4.5s ease-in-out infinite; }
 .float-anim-delay { animation-delay: 1.4s; }
 @keyframes floatY { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-14px) rotate(1.5deg); } }
+
 .couple-card h3 { font-family: var(--font-serif); font-size: 21px; font-weight: 600; margin: 0 0 4px; color: var(--ink); }
 .couple-nick { color: var(--maroon); font-style: italic; margin: 0 0 12px; font-family: var(--font-serif); font-size: 16px; }
 .couple-desc { font-size: 13.5px; line-height: 1.8; color: var(--ink-soft); }
@@ -439,6 +444,8 @@ img { max-width: 100%; display: block; }
 .rsvp-form select option { color: #000; }
 .rsvp-form textarea { resize: vertical; }
 .rsvp-form input:focus, .rsvp-form select:focus, .rsvp-form textarea:focus { outline: none; border-color: var(--gold); }
+.rsvp-form input.locked { background: rgba(217,183,108,0.1); color: var(--gold-light); cursor: not-allowed; }
+.rsvp-name-lock-note { font-size: 11.5px; color: var(--gold-light); margin: -8px 0 0; }
 .btn-submit {
   display: flex; align-items: center; justify-content: center; margin-top: 6px; padding: 14px;
   background: var(--gold); color: var(--maroon-deep); border: none;
@@ -503,16 +510,17 @@ img { max-width: 100%; display: block; }
   background: rgba(217,183,108,0.1); color: var(--gold-light); font-size: 16px; cursor: pointer;
 }
 
-.game-canvas-wrap { position: relative; border-radius: 8px; overflow: hidden; line-height: 0; min-height: 420px; background: #2a0d0e; }
+.game-canvas-wrap { position: relative; border-radius: 8px; overflow: hidden; min-height: 420px; background: #2a0d0e; }
+.game-canvas-wrap canvas { line-height: 0; }
 .game-canvas-wrap canvas { display: block; width: 100%; height: auto; touch-action: none; }
 
 .game-overlay {
   position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
   background: rgba(20,8,8,0.82); backdrop-filter: blur(2px); text-align: center; padding: 20px;
 }
-.game-overlay-title { font-family: var(--font-serif); font-size: 24px; color: var(--text-light); margin: 0 0 10px; }
-.game-overlay-sub { font-size: 13px; color: var(--text-light-dim); margin: 0 0 18px; max-width: 260px; }
-.game-overlay-note { font-size: 12px; color: var(--gold-light); margin-top: 14px; max-width: 260px; }
+.game-overlay-title { font-family: var(--font-serif); font-size: 24px; line-height: 1.3; color: var(--text-light); margin: 0 0 10px; }
+.game-overlay-sub { font-size: 13px; line-height: 1.6; color: var(--text-light-dim); margin: 0 0 18px; max-width: 260px; }
+.game-overlay-note { font-size: 12px; line-height: 1.6; color: var(--gold-light); margin-top: 14px; max-width: 260px; }
 
 .game-tutorial { display: flex; flex-direction: column; gap: 10px; margin: 6px 0 22px; max-width: 280px; }
 .game-tutorial-step {
