@@ -130,3 +130,4 @@ fd.text((64,64), "A&L", font=ffont, fill=GOLD_LIGHT, anchor="mm")
 fav.save(os.path.join(OUT, "favicon.png"))
 
 print("done:", sorted(os.listdir(OUT)))
+
