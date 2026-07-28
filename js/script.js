@@ -4,8 +4,23 @@
   /* ---------- Guest name from URL (?to=Nama) ---------- */
   const params = new URLSearchParams(window.location.search);
   const guest = params.get("to");
+  let invitedGuestName = "";
   if (guest) {
-    document.getElementById("guestName").textContent = decodeURIComponent(guest.replace(/\+/g, " "));
+    invitedGuestName = decodeURIComponent(guest.replace(/\+/g, " ")).trim();
+    document.getElementById("guestName").textContent = invitedGuestName;
+  }
+
+  // Kalau link undangan sudah membawa nama tamu (?to=...), kunci kolom nama
+  // di form RSVP supaya tamu tidak bisa mengganti jadi nama lain -- ini
+  // mencegah orang yang tidak diundang asal isi RSVP lewat link yang beredar.
+  // Nama yang sama ini juga dipakai sebagai nama pemain di mini game.
+  const rsvpNameInput = document.getElementById("rsvpName");
+  if (invitedGuestName && rsvpNameInput) {
+    rsvpNameInput.value = invitedGuestName;
+    rsvpNameInput.readOnly = true;
+    rsvpNameInput.classList.add("locked");
+    const lockNote = document.getElementById("rsvpNameLockNote");
+    if (lockNote) lockNote.classList.remove("hidden");
   }
 
   /* ---------- Open invitation ---------- */
@@ -56,6 +71,27 @@
       const zone = document.querySelector(".video-zone");
       if (zone) zone.classList.add("video-failed");
     });
+  }
+
+  /* ---------- Video kenangan: musik latar jeda otomatis saat diputar ---------- */
+  const memoriesVideo = document.getElementById("memoriesVideo");
+  let musicPausedByMemories = false;
+  if (memoriesVideo) {
+    memoriesVideo.addEventListener("play", function () {
+      if (!bgMusic.paused) {
+        musicPausedByMemories = true;
+        bgMusic.pause();
+        musicBtn.classList.remove("playing");
+      }
+    });
+    function resumeMusicAfterMemories() {
+      if (musicPausedByMemories) {
+        musicPausedByMemories = false;
+        bgMusic.play().then(function () { musicBtn.classList.add("playing"); }).catch(function () {});
+      }
+    }
+    memoriesVideo.addEventListener("pause", resumeMusicAfterMemories);
+    memoriesVideo.addEventListener("ended", resumeMusicAfterMemories);
   }
 
   /* ---------- Menu navigasi kiri atas (filter + klik ke halaman) ---------- */
