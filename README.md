@@ -17,6 +17,7 @@ tengah halaman dan galeri foto yang auto-scroll tanpa henti.
 ├── assets/images/                   -> semua foto (16 galeri + cover + foto mempelai)
 ├── assets/audio/                    -> taruh musik latar di sini (music.mp3)
 ├── assets/background.mp4            -> video latar (lihat spesifikasi di bawah)
+├── assets/memories.mp4              -> video kenangan sebelum galeri foto (lihat bagian 10)
 └── google-apps-script/Code.gs       -> backend RSVP ke Google Sheets
 ```
 
@@ -47,27 +48,30 @@ Branch `main` / folder `/ (root)` → **Save**. Tunggu 1-2 menit, link aktif di:
 
 ---
 
-## 2. Video latar (assets/background.mp4)
+## 2. Video latar bingkai ornamen (assets/background.mp4)
 
-Video ini tampil sebagai latar bergerak mulai dari bagian ayat "Efesus 5:28"
-sampai bagian akhir "Ucapan & Doa" — video akan "menempel" di layar selagi
-kamu scroll melewati bagian-bagian tersebut, lalu lepas normal setelahnya.
+Video ini adalah **bingkai ornamen daun emas & hijau di atas latar hitam**,
+tampil dari bagian ayat "Efesus 5:28" sampai bagian akhir "Ucapan & Doa" --
+video akan "menempel" (jadi bingkai tetap) selagi kamu scroll, dan bagian
+tengahnya yang polos hitam otomatis "diisi" oleh konten undangan (teks,
+foto, countdown, RSVP, dll) yang scroll di atasnya. Videonya sudah aku buat
+sendiri secara prosedural (bukan foto stok) supaya bagian tengahnya benar-benar
+polos/hitam dan konsisten sebagai bingkai, bukan gambar yang ditumpuk.
 
-**Spesifikasi yang disarankan:**
+Video memakai `object-fit: contain` (bukan `cover`) supaya ke-4 sisi bingkai
+**selalu utuh terlihat**, tidak pernah terpotong di layar mana pun -- area
+kosong di luar video otomatis hitam, menyatu dengan warna latar videonya.
+
+**Kalau mau ganti dengan bingkai/video lain buatanmu sendiri:**
 - Resolusi: **1080 x 1920 px (portrait, rasio 9:16)**
-- Durasi: **10–20 detik**, dibuat **loop mulus** (frame awal & akhir menyambung)
-- Format: **MP4 (H.264)**, tanpa suara/di-mute
-- Ukuran file: usahakan **di bawah 10 MB** (idealnya 3-8MB) supaya loading cepat
-- Isi video sebaiknya gerakan **lembut & tidak ramai** (contoh: kelopak bunga
-  jatuh perlahan, bokeh cahaya lembut, asap tipis, partikel emas mengambang)
-  supaya teks di atasnya tetap mudah dibaca
-
-Video contoh (placeholder) sudah aku sertakan supaya efeknya langsung bisa
-dicoba — tinggal timpa file `assets/background.mp4` dengan video pilihanmu
-sendiri (nama file harus tetap `background.mp4`).
+- Bagian **tengah sebaiknya polos gelap/hitam** (itu area yang "ditempati"
+  konten undangan), ornamen/dekorasi cukup di pinggiran sebagai bingkai
+- Durasi bebas (contoh yang terpasang sekarang 5 detik, loop otomatis)
+- Format: **MP4 (H.264)**, tanpa suara
+- Ukuran file: usahakan di bawah 10 MB (video prosedural ini cuma ~140 KB)
 
 Kalau video gagal dimuat (misal lupa upload), halaman otomatis jatuh ke
-gradasi warna cream-ke-maroon sebagai cadangan, jadi tampilan tidak rusak.
+gradasi warna hijau-gelap-ke-hitam sebagai cadangan, jadi tampilan tidak rusak.
 
 ---
 
@@ -93,7 +97,12 @@ Kalau jumlah foto galeri berubah, sesuaikan `galleryCount` **dan**
 
 Taruh file musik dengan nama **`music.mp3`** di folder `assets/audio/`.
 Tombol musik ada di pojok kiri bawah, otomatis mencoba memutar begitu
-tombol "Buka Undangan" ditekan.
+tombol "Buka Undangan" ditekan. Ikonnya sekarang jelas beda antara nyala
+(speaker + gelombang suara, tombol warna maroon) dan mati (speaker dicoret,
+tombol warna cream) -- sebelumnya cuma piringan berputar yang susah dibedakan.
+
+Musik otomatis **jeda sendiri** saat tamu memutar video kenangan (bagian 11),
+dan **otomatis lanjut lagi** begitu video kenangan selesai (atau di-pause).
 
 ---
 
@@ -111,7 +120,7 @@ tombol "Buka Undangan" ditekan.
 6. Commit & push.
 
 Sheet otomatis punya tab **"RSVP"** dengan kolom:
-`Timestamp | Nama | Kehadiran | JumlahTamu | Ucapan | WA_Target`.
+`Timestamp | Nama | Kehadiran | JumlahTamu | Ucapan`.
 
 > Tiap kali `Code.gs` diedit lagi, perlu **Deploy → Manage deployments → edit
 > (pensil) → New version → Deploy** supaya perubahan aktif di URL yang sama.
@@ -120,12 +129,21 @@ Sheet otomatis punya tab **"RSVP"** dengan kolom:
 Sheet setiap `rsvpPollSeconds` detik (default 15 detik) — statistik
 Hadir/Tidak Hadir/Ragu-ragu dan dinding ucapan ikut ter-update sendiri.
 
-**Pilihan WhatsApp setelah RSVP:** tamu bisa klik tombol Alfa/Lenny yang
-tersimpan ke kolom `WA_Target` di Sheet, tapi **tidak** ditampilkan di
-dinding ucapan publik.
+**Privasi:** website ini **tidak meminta atau menyimpan nomor WhatsApp tamu**
+sama sekali. Data RSVP (nama, kehadiran, ucapan) hanya tersimpan di Google
+Sheet kalian sendiri -- tidak ada tombol/alur yang mengarahkan ke WhatsApp
+Alfa atau Lenny di form RSVP.
 
 **Ucapan lebih dari 10:** otomatis muncul tombol "Selanjutnya" (atur jumlah
 per halaman lewat `wishesPerPage` di `js/config.js`).
+
+**Nama tamu terkunci dari link undangan:** kalau kamu kirim link pakai
+`?to=NamaTamu` (lihat bagian 1), kolom nama di form RSVP otomatis terisi
+nama itu dan **tidak bisa diketik ulang/diganti** oleh tamu -- ada catatan
+kecil bergembok di bawah kolomnya. Ini mencegah orang yang tidak diundang
+asal isi RSVP kalau link-nya tersebar. Kalau tamu buka link dasar tanpa
+`?to=...`, kolom nama tetap bisa diisi bebas seperti biasa (fallback).
+Nama yang sama ini juga otomatis jadi nama pemain di mini game (bagian 12).
 
 ---
 
@@ -163,22 +181,54 @@ bawah halaman akan membuka chat WhatsApp ke nomor yang diatur di
 
 ---
 
-## 11. Mini game (tantangan skor terbaik)
+## 10. Menu navigasi kiri atas
+
+Ikon garis tiga (☰) di pojok kiri atas membuka panel menu berisi daftar
+semua halaman (Beranda, Mempelai, Waktu & Tempat, Video Kenangan, Galeri,
+Kirim Kado, RSVP & Ucapan, Main Game). Ada kolom pencarian di atasnya untuk
+memfilter daftar sesuai judul yang diketik. Klik salah satu judul untuk
+langsung lompat ke bagian itu.
+
+---
+
+## 11. Video kenangan (sebelum galeri foto)
+
+Ada player video biasa (dengan tombol play/pause bawaan browser) di atas
+galeri 16 foto, judulnya "Video Kenangan". Taruh video kalian dengan nama
+**`assets/memories.mp4`** -- saat ini masih placeholder bertuliskan "Ganti
+dengan video asli kalian di sini", tinggal ditimpa dengan file yang sama
+namanya. Gambar sampul sebelum diputar (poster) memakai `assets/images/cover.jpg`.
+
+---
+
+## 12. Mini game (tantangan skor terbaik)
 
 Ada game lari-hindari-rintangan original di atas footer (bukan Subway Surfers
 asli -- itu properti berhak cipta, jadi aku buatkan versi original bergaya
 serupa: 3 lajur, hindari rintangan, kumpulkan koin, kontrol geser/tap/panah).
 
+- **Tutorial** ditampilkan dulu sebelum tombol "Mulai Main" (cara pindah
+  jalur, lompat, dan kumpulkan koin).
+- **Wajib isi RSVP dulu**: kalau tamu belum mengisi form RSVP, game akan
+  menampilkan ajakan "Isi RSVP Dulu Yuk" -- ini supaya nama di papan
+  peringkat selalu sama dengan nama yang dipakai saat konfirmasi kehadiran.
 - **Main sekali per perangkat**: begitu game over, perangkat itu tidak bisa
   main lagi (disimpan di localStorage browser, bukan akun/login).
-- **Skor tersimpan otomatis** ke tab baru **"GameScore"** di Google Sheet yang
-  sama (kolom: Timestamp, Nama, Skor) -- nama diambil dari nama yang diisi
-  di form RSVP kalau tamu sudah mengisi, atau "Tamu" kalau belum.
+- **Batas waktu bermain**: otomatis ditutup setelah tanggal `gameEndDate` di
+  `js/config.js` (default 23 Oktober 2026), meskipun tamu belum pernah main.
+  Tanggal pengumuman pemenang (`gameAnnounceDate`, default 28 Oktober 2026)
+  cuma ditampilkan sebagai teks info -- pengumumannya tetap kamu lakukan
+  sendiri secara manual (WA/live/dll).
+- **Papan peringkat** di bawah area game menampilkan top skor (jumlahnya
+  diatur lewat `leaderboardTopCount`), live update otomatis seperti dinding
+  ucapan RSVP.
 - **Layar penuh**: ada tombol ⛶ di pojok kanan atas area game.
-- Untuk menentukan pemenang, buka tab "GameScore" di Google Sheet dan urutkan
-  kolom Skor dari besar ke kecil.
+- Skor tersimpan ke tab baru **"GameScore"** di Google Sheet yang sama
+  (kolom: Timestamp, Nama, Skor). Untuk menentukan pemenang, buka tab itu
+  dan urutkan kolom Skor dari besar ke kecil (atau lihat langsung papan
+  peringkat di website).
 
-## 12. Cek lokal sebelum upload (opsional)
+## 13. Cek lokal sebelum upload (opsional)
 
 ```bash
 python3 -m http.server 8080
