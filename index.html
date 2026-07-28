@@ -79,7 +79,15 @@
 
   <!-- music toggle -->
   <button id="musicBtn" class="music-btn" aria-label="Putar musik">
-    <span class="music-disc"></span>
+    <svg class="icon-sound-on" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+      <path d="M4 9v6h4l5 5V4L8 9H4z" fill="currentColor"/>
+      <path d="M15.5 8.5a5 5 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M18 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="icon-sound-off" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+      <path d="M4 9v6h4l5 5V4L8 9H4z" fill="currentColor"/>
+      <path d="M16 9l5 5M21 9l-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
   </button>
 
   <!-- ===== HERO (minimal, just scroll cue) ===== -->
@@ -326,6 +334,7 @@
 
           <form id="rsvpForm" class="rsvp-form reveal">
             <input type="text" id="rsvpName" placeholder="Nama Anda" required>
+            <p class="rsvp-name-lock-note hidden" id="rsvpNameLockNote">&#128274; Nama diambil dari link undangan Anda dan tidak bisa diubah.</p>
             <select id="rsvpAttend" required>
               <option value="" disabled selected>Konfirmasi Kehadiran</option>
               <option value="Hadir">Hadir</option>
