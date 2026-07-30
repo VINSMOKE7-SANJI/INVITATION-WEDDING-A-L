@@ -21,7 +21,7 @@ const CONFIG = {
   // URL Web App Google Apps Script (lihat google-apps-script/Code.gs & README.md)
   // Setelah deploy, tempel URL-nya di sini, contoh:
   // "https://script.google.com/macros/s/AKfycb.../exec"
-  scriptURL: "https://script.google.com/macros/s/AKfycbxKRWeJDz96k9IuSM_4BFyB2EG4mB3j0hmBnwMqGFvA9nVvTHd67jJ_jI9e-Hd_pXEZrw/exec",
+  scriptURL: "",
 
   // Berapa kali RSVP+stats dicek ulang otomatis (tanpa refresh), dalam detik.
   rsvpPollSeconds: 15,
@@ -31,7 +31,7 @@ const CONFIG = {
 
   // Link live streaming (YouTube/Instagram/Zoom, dll). Kosongkan ("") kalau
   // tidak ada live streaming -- section-nya otomatis akan disembunyikan.
-  liveStreamingURL: "https://www.youtube.com/live/rQJoEpzKkNk?si=UAGSj2I73_dQ9Wrd",
+  liveStreamingURL: "",
 
   // Footer iklan "Order Undangan Digital" -- nomor WhatsApp tujuan.
   footerAdWhatsApp: "6281246211461",
