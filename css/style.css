@@ -446,6 +446,7 @@ img { max-width: 100%; display: block; }
 .rsvp-form input:focus, .rsvp-form select:focus, .rsvp-form textarea:focus { outline: none; border-color: var(--gold); }
 .rsvp-form input.locked { background: rgba(217,183,108,0.1); color: var(--gold-light); cursor: not-allowed; }
 .rsvp-name-lock-note { font-size: 11.5px; color: var(--gold-light); margin: -8px 0 0; }
+.rsvp-error-msg { font-size: 12.5px; color: #ff8a80; text-align: center; margin: 4px 0 0; }
 .btn-submit {
   display: flex; align-items: center; justify-content: center; margin-top: 6px; padding: 14px;
   background: var(--gold); color: var(--maroon-deep); border: none;
