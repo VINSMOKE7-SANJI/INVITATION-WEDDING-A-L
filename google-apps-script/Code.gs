@@ -1,98 +1,79 @@
 /**
- * BACKEND GOOGLE APPS SCRIPT UNTUK UNDANGAN DIGITAL ALFA & LENNY
- * Menangani: RSVP/Ucapan & Skor Game (Leaderboard)
+ * BACKEND GOOGLE APPS SCRIPT ALFA & LENNY
  */
 
-// Nama sheet yang digunakan di Google Sheets
 const SHEET_RSVP_NAME = "RSVP";
-const SHEET_GAME_NAME = "GameScore";
+const SHEET_GAME_NAME = "GAME";
 
-/**
- * Fungsi pembantu untuk mengambil/membuat sheet jika belum ada
- */
-function getOrCreateSheet(sheetName, headers) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName(sheetName);
-  
-  if (!sheet) {
-    sheet = ss.insertSheet(sheetName);
-    if (headers && headers.length > 0) {
-      sheet.appendRow(headers);
-      // Format header agar cetak tebal
-      sheet.getRange(1, 1, 1, headers.length).setFontWeight("bold");
-    }
-  }
-  return sheet;
-}
-
-/**
- * Menangani permintaan GET (?action=list atau ?action=leaderboard)
- */
 function doGet(e) {
-  const action = e.parameter.action;
-  let result = [];
+  try {
+    const action = e && e.parameter ? e.parameter.action : "";
+    let result = [];
 
-  if (action === "list") {
-    // 1. Ambil daftar ucapan RSVP
-    const sheet = getOrCreateSheet(SHEET_RSVP_NAME, ["Timestamp", "Nama", "Kehadiran", "Jumlah Tamu", "Pesan"]);
-    const data = sheet.getDataRange().getValues();
-    
-    // Baris 1 adalah header, jadi mulai dari i = 1
-    for (let i = 1; i < data.length; i++) {
-      const row = data[i];
-      if (row[1]) { // Pastikan kolom nama tidak kosong
-        result.push({
-          name: row[1],
-          attend: row[2] || "",
-          guests: row[3] || 1,
-          message: row[4] || ""
-        });
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+    if (action === "list") {
+      const sheet = ss.getSheetByName(SHEET_RSVP_NAME);
+      if (sheet) {
+        const data = sheet.getDataRange().getValues();
+        for (let i = 1; i < data.length; i++) {
+          if (data[i][1]) {
+            result.push({
+              name: data[i][1],
+              attend: data[i][2] || "",
+              guests: data[i][3] || 1,
+              message: data[i][4] || ""
+            });
+          }
+        }
+      }
+    } else if (action === "leaderboard") {
+      const sheet = ss.getSheetByName(SHEET_GAME_NAME);
+      if (sheet) {
+        const data = sheet.getDataRange().getValues();
+        const scores = [];
+        for (let i = 1; i < data.length; i++) {
+          if (data[i][1]) {
+            scores.push({
+              name: data[i][1],
+              score: parseInt(data[i][2], 10) || 0
+            });
+          }
+        }
+        // Urutkan skor tertinggi ke terendah
+        scores.sort((a, b) => b.score - a.score);
+        result = scores;
       }
     }
-  } else if (action === "leaderboard") {
-    // 2. Ambil papan peringkat Game Score
-    const sheet = getOrCreateSheet(SHEET_GAME_NAME, ["Timestamp", "Nama", "Skor"]);
-    const data = sheet.getDataRange().getValues();
-    const scores = [];
 
-    for (let i = 1; i < data.length; i++) {
-      const row = data[i];
-      if (row[1]) {
-        scores.push({
-          name: row[1],
-          score: parseInt(row[2], 10) || 0
-        });
-      }
-    }
+    return ContentService
+      .createTextOutput(JSON.stringify(result))
+      .setMimeType(ContentService.MimeType.JSON);
 
-    // Urutkan dari skor tertinggi ke terendah
-    scores.sort(function (a, b) {
-      return b.score - a.score;
-    });
-
-    result = scores;
+  } catch (err) {
+    return ContentService
+      .createTextOutput(JSON.stringify([]))
+      .setMimeType(ContentService.MimeType.JSON);
   }
-
-  return ContentService
-    .createTextOutput(JSON.stringify(result))
-    .setMimeType(ContentService.MimeType.JSON);
 }
 
-/**
- * Menangani permintaan POST (Simpan RSVP atau Skor Game)
- */
 function doPost(e) {
   try {
     let payload = {};
-    if (e.postData && e.postData.contents) {
+    if (e && e.postData && e.postData.contents) {
       payload = JSON.parse(e.postData.contents);
     }
 
     const action = payload.action;
     const timestamp = new Date();
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
 
     if (action === "rsvp") {
-      const sheet = getOrCreateSheet(SHEET_RSVP_NAME, ["Timestamp", "Nama", "Kehadiran", "Jumlah Tamu", "Pesan"]);
+      let sheet = ss.getSheetByName(SHEET_RSVP_NAME);
+      if (!sheet) {
+        sheet = ss.insertSheet(SHEET_RSVP_NAME);
+        sheet.appendRow(["Timestamp", "Nama", "Kehadiran", "Jumlah Tamu", "Pesan"]);
+      }
       sheet.appendRow([
         timestamp,
         payload.name || "",
@@ -100,8 +81,12 @@ function doPost(e) {
         payload.guests || 1,
         payload.message || ""
       ]);
-    } else if (action === "game_score") {
-      const sheet = getOrCreateSheet(SHEET_GAME_NAME, ["Timestamp", "Nama", "Skor"]);
+    } else if (action === "GAME") {
+      let sheet = ss.getSheetByName(SHEET_GAME_NAME);
+      if (!sheet) {
+        sheet = ss.insertSheet(SHEET_GAME_NAME);
+        sheet.appendRow(["Timestamp", "Nama", "Skor"]);
+      }
       sheet.appendRow([
         timestamp,
         payload.name || "Tamu",
