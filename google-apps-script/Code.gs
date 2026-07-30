@@ -1,106 +1,109 @@
-/**
- * BACKEND GOOGLE APPS SCRIPT ALFA & LENNY
- */
-
-const SHEET_RSVP_NAME = "RSVP";
-const SHEET_GAME_NAME = "GAME";
-
 function doGet(e) {
-  try {
-    const action = e && e.parameter ? e.parameter.action : "";
-    let result = [];
-
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
-
-    if (action === "list") {
-      const sheet = ss.getSheetByName(SHEET_RSVP_NAME);
-      if (sheet) {
-        const data = sheet.getDataRange().getValues();
-        for (let i = 1; i < data.length; i++) {
-          if (data[i][1]) {
-            result.push({
-              name: data[i][1],
-              attend: data[i][2] || "",
-              guests: data[i][3] || 1,
-              message: data[i][4] || ""
-            });
-          }
-        }
-      }
-    } else if (action === "leaderboard") {
-      const sheet = ss.getSheetByName(SHEET_GAME_NAME);
-      if (sheet) {
-        const data = sheet.getDataRange().getValues();
-        const scores = [];
-        for (let i = 1; i < data.length; i++) {
-          if (data[i][1]) {
-            scores.push({
-              name: data[i][1],
-              score: parseInt(data[i][2], 10) || 0
-            });
-          }
-        }
-        // Urutkan skor tertinggi ke terendah
-        scores.sort((a, b) => b.score - a.score);
-        result = scores;
+  var action = e.parameter.action;
+  var sheet = SpreadsheetApp.getActiveSpreadsheet();
+  
+  // 1. Ambil Data Leaderboard
+  if (action === "getLeaderboard") {
+    var leaderboardSheet = sheet.getSheetByName("Leaderboard");
+    if (!leaderboardSheet) {
+      return responseJSON({ status: "success", leaderboard: [] });
+    }
+    
+    var data = leaderboardSheet.getDataRange().getValues();
+    var leaderboard = [];
+    
+    // Baris 0 adalah Header (Nama, Skor), mulai dari baris 1
+    for (var i = 1; i < data.length; i++) {
+      if (data[i][0]) { // Jika nama tidak kosong
+        leaderboard.push({
+          nama: data[i][0],
+          skor: Number(data[i][1])
+        });
       }
     }
-
-    return ContentService
-      .createTextOutput(JSON.stringify(result))
-      .setMimeType(ContentService.MimeType.JSON);
-
-  } catch (err) {
-    return ContentService
-      .createTextOutput(JSON.stringify([]))
-      .setMimeType(ContentService.MimeType.JSON);
+    
+    // Urutkan skor terbesar ke terkecil
+    leaderboard.sort(function(a, b) {
+      return b.skor - a.skor;
+    });
+    
+    // Ambil Top 10 saja
+    leaderboard = leaderboard.slice(0, 10);
+    
+    return responseJSON({ status: "success", leaderboard: leaderboard });
   }
+  
+  // 2. Ambil Data Ucapan RSVP
+  if (action === "getWishes") {
+    var rsvpSheet = sheet.getSheetByName("RSVP");
+    if (!rsvpSheet) {
+      return responseJSON({ status: "success", wishes: [] });
+    }
+    var data = rsvpSheet.getDataRange().getValues();
+    var wishes = [];
+    for (var i = 1; i < data.length; i++) {
+      wishes.push({
+        nama: data[i][0],
+        kehadiran: data[i][1],
+        jumlah: data[i][2],
+        ucapan: data[i][3],
+        waktu: data[i][4]
+      });
+    }
+    return responseJSON({ status: "success", wishes: wishes.reverse() });
+  }
+
+  return responseJSON({ status: "error", message: "Action tidak dikenal" });
 }
 
 function doPost(e) {
   try {
-    let payload = {};
-    if (e && e.postData && e.postData.contents) {
-      payload = JSON.parse(e.postData.contents);
+    var data = JSON.parse(e.postData.contents);
+    var sheet = SpreadsheetApp.getActiveSpreadsheet();
+
+    // A. SIMPAN SKOR GAME
+    if (data.action === "saveScore") {
+      var leaderboardSheet = sheet.getSheetByName("Leaderboard");
+      if (!leaderboardSheet) {
+        leaderboardSheet = sheet.insertSheet("Leaderboard");
+        leaderboardSheet.appendRow(["Nama", "Skor", "Waktu"]);
+      }
+
+      leaderboardSheet.appendRow([
+        data.nama,
+        data.skor,
+        new Date()
+      ]);
+
+      return responseJSON({ status: "success", message: "Skor berhasil disimpan" });
     }
 
-    const action = payload.action;
-    const timestamp = new Date();
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    // B. SIMPAN RSVP / UCAPAN
+    if (data.action === "saveRSVP" || !data.action) {
+      var rsvpSheet = sheet.getSheetByName("RSVP");
+      if (!rsvpSheet) {
+        rsvpSheet = sheet.insertSheet("RSVP");
+        rsvpSheet.appendRow(["Nama", "Kehadiran", "Jumlah Guest", "Ucapan", "Waktu"]);
+      }
 
-    if (action === "rsvp") {
-      let sheet = ss.getSheetByName(SHEET_RSVP_NAME);
-      if (!sheet) {
-        sheet = ss.insertSheet(SHEET_RSVP_NAME);
-        sheet.appendRow(["Timestamp", "Nama", "Kehadiran", "Jumlah Tamu", "Pesan"]);
-      }
-      sheet.appendRow([
-        timestamp,
-        payload.name || "",
-        payload.attend || "",
-        payload.guests || 1,
-        payload.message || ""
+      rsvpSheet.appendRow([
+        data.nama,
+        data.kehadiran,
+        data.jumlah,
+        data.ucapan,
+        new Date()
       ]);
-    } else if (action === "GAME") {
-      let sheet = ss.getSheetByName(SHEET_GAME_NAME);
-      if (!sheet) {
-        sheet = ss.insertSheet(SHEET_GAME_NAME);
-        sheet.appendRow(["Timestamp", "Nama", "Skor"]);
-      }
-      sheet.appendRow([
-        timestamp,
-        payload.name || "Tamu",
-        parseInt(payload.score, 10) || 0
-      ]);
+
+      return responseJSON({ status: "success", message: "RSVP berhasil disimpan" });
     }
-
-    return ContentService
-      .createTextOutput(JSON.stringify({ ok: true }))
-      .setMimeType(ContentService.MimeType.JSON);
 
   } catch (err) {
-    return ContentService
-      .createTextOutput(JSON.stringify({ ok: false, error: err.toString() }))
-      .setMimeType(ContentService.MimeType.JSON);
+    return responseJSON({ status: "error", message: err.toString() });
   }
+}
+
+// Helper Response Format JSON
+function responseJSON(data) {
+  return ContentService.createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
 }
