@@ -58,7 +58,7 @@
     <a href="#rsvp" data-label="RSVP"></a>
   </nav>
 
-  <!-- menu navigasi kiri atas (bisa difilter, klik untuk lompat ke halaman) -->
+  <!-- menu navigasi kiri atas -->
   <button id="navMenuBtn" class="nav-menu-btn" aria-label="Buka menu navigasi">
     <span></span><span></span><span></span>
   </button>
@@ -90,7 +90,7 @@
     </svg>
   </button>
 
-  <!-- ===== HERO (minimal, just scroll cue) ===== -->
+  <!-- ===== HERO ===== -->
   <section id="hero" class="section hero">
     <div class="hero-bg"></div>
     <div class="hero-content">
@@ -104,9 +104,7 @@
     </div>
   </section>
 
-  <!-- ============ VIDEO-BACKGROUND ZONE ============
-       Latar video assets/background.mp4 tampil mulai dari sini
-       sampai akhir bagian ucapan & doa (RSVP). Lihat README untuk spek video. -->
+  <!-- ============ VIDEO-BACKGROUND ZONE ============ -->
   <div class="video-zone">
     <div class="video-sticky">
       <video autoplay muted loop playsinline preload="none" id="bgVideo">
@@ -208,7 +206,7 @@
         </div>
       </section>
 
-      <!-- ===== LIVE STREAMING (opsional, isi liveStreamingURL di js/config.js) ===== -->
+      <!-- ===== LIVE STREAMING ===== -->
       <section class="section live-section hidden" id="liveSection">
         <div class="glass-card">
           <p class="eyebrow reveal">Bagi yang Berhalangan Hadir</p>
@@ -221,7 +219,7 @@
       <!-- ===== DARK TINT ZONE: GALERI / KADO / RSVP ===== -->
       <div class="dark-zone">
 
-      <!-- ===== VIDEO KENANGAN (sebelum galeri foto) ===== -->
+      <!-- ===== VIDEO KENANGAN ===== -->
       <section id="kenangan" class="section memories-section">
         <div class="glass-card-dark">
           <p class="eyebrow reveal">Sebelum Galeri Foto</p>
@@ -235,7 +233,7 @@
         </div>
       </section>
 
-      <!-- ===== GALERI (marquee 3 baris + 3 paragraf makna pernikahan) ===== -->
+      <!-- ===== GALERI ===== -->
       <section id="galeri" class="section gallery-section">
         <div class="glass-card-dark">
           <p class="eyebrow reveal">Galeri Kami</p>
@@ -269,7 +267,7 @@
         </p>
       </section>
 
-      <!-- ===== KADO / GIFT (black card style) ===== -->
+      <!-- ===== KADO / GIFT ===== -->
       <section id="kado" class="section gift-section">
         <div class="glass-card-dark">
           <p class="eyebrow reveal">Tanpa Mengurangi Rasa Hormat</p>
@@ -325,7 +323,6 @@
           <h2 class="section-title reveal">RSVP &amp; Ucapan</h2>
           <p class="rsvp-desc reveal">Mohon konfirmasi kehadiran Anda dan berikan doa restu untuk kami.</p>
 
-          <!-- live attendance stats, updates without refresh -->
           <div class="rsvp-stats" id="rsvpStats">
             <div class="stat-box"><span id="statHadir">0</span><small>Hadir</small></div>
             <div class="stat-box"><span id="statTidak">0</span><small>Tidak Hadir</small></div>
@@ -351,19 +348,16 @@
             <button type="submit" class="btn-submit btn-bounce-x" id="rsvpSubmitBtn"><span>Kirim Konfirmasi</span><i class="arrow-right">&#8594;</i></button>
           </form>
 
-          <!-- shown after successful submit -->
           <div id="rsvpThanks" class="rsvp-thanks hidden">
             <p class="rsvp-thanks-title">Terima kasih atas doa &amp; konfirmasinya&#33;</p>
             <p class="rsvp-thanks-sub">Konfirmasi kehadiran dan ucapan Anda sudah kami terima. Sampai jumpa di hari bahagia kami! 🤍</p>
           </div>
 
-          <!-- shown on repeat visits from the same device, instead of the form -->
           <div id="rsvpAlready" class="rsvp-thanks hidden">
             <p class="rsvp-thanks-title">Anda sudah mengonfirmasi kehadiran</p>
             <p class="rsvp-thanks-sub">Terima kasih atas doa &amp; ucapan yang sudah diberikan. Sampai jumpa di hari bahagia kami!</p>
           </div>
 
-          <!-- live wishes wall with pagination -->
           <div class="wishes-wall">
             <h3>Ucapan &amp; Doa</h3>
             <div id="wishesList" class="wishes-list">
@@ -393,7 +387,7 @@
     </div>
   </section>
 
-  <!-- ===== MINI GAME (main sekali per perangkat, untuk pemenang skor terbaik) ===== -->
+  <!-- ===== MINI GAME ===== -->
   <section class="section game-section" id="gameSection">
     <p class="eyebrow reveal">Main Yuk, Sebelum Pulang</p>
     <h2 class="section-title reveal">Tantangan Skor Terbaik</h2>
@@ -411,7 +405,6 @@
       <div class="game-canvas-wrap">
         <canvas id="gameCanvas"></canvas>
 
-        <!-- tutorial + mulai (tampil kalau nama RSVP sudah ada & masih dalam periode main) -->
         <div class="game-overlay hidden" id="gameIntro">
           <p class="game-overlay-title">Siap Berlari?</p>
           <div class="game-tutorial">
@@ -423,7 +416,6 @@
           <button class="btn-submit btn-bounce-x" id="gameStartBtn"><span>Mulai Main</span><i class="arrow-right">&#8594;</i></button>
         </div>
 
-        <!-- gerbang: minta isi RSVP dulu supaya nama pemain konsisten dgn RSVP -->
         <div class="game-overlay hidden" id="gameNeedName">
           <p class="game-overlay-title">Isi RSVP Dulu Yuk</p>
           <p class="game-overlay-sub">Supaya nama kamu di papan peringkat sesuai dengan konfirmasi kehadiran,
@@ -431,7 +423,6 @@
           <a href="#rsvp" class="btn-submit btn-bounce-x" id="gameGotoRsvpBtn"><span>Isi RSVP</span><i class="arrow-right">&#8594;</i></a>
         </div>
 
-        <!-- periode main sudah lewat -->
         <div class="game-overlay hidden" id="gameClosed">
           <p class="game-overlay-title">Permainan Sudah Ditutup</p>
           <p class="game-overlay-sub">Periode bermain sudah berakhir. Nantikan pengumuman pemenangnya pada
@@ -458,12 +449,12 @@
       </div>
     </div>
 
-    <!-- papan peringkat, live update seperti dinding ucapan RSVP -->
-    <div class="leaderboard-wall">
+    <!-- Papan Peringkat HTML (SUDAH DIPERBAIKI) -->
+    <div class="leaderboard-box">
       <h3>Papan Peringkat</h3>
-      <div id="leaderboardList" class="leaderboard-list">
-        <p class="wishes-empty">Memuat papan peringkat&hellip;</p>
-      </div>
+      <ol id="leaderboard-list">
+        <li>Memuat papan peringkat...</li>
+      </ol>
     </div>
   </section>
 
@@ -481,8 +472,72 @@
   <source src="assets/audio/music.mp3" type="audio/mpeg">
 </audio>
 
+<!-- File script eksternal -->
 <script src="js/config.js"></script>
 <script src="js/script.js"></script>
 <script src="js/game.js"></script>
+
+<!-- Script Logika Leaderboard & Simpan Skor Game (SUDAH DIPERBAIKI) -->
+<script>
+  // 1. Ganti tautan ini dengan URL Web App dari Apps Script kamu!
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycb.../exec"; 
+
+  // 2. Fungsi untuk Mengirim Skor saat Game Selesai
+  async function simpanSkorGame(namaPlayer, skorPlayer) {
+    try {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: "saveScore",
+          nama: namaPlayer,
+          skor: skorPlayer
+        })
+      });
+      // Setelah berhasil simpan, langsung perbarui tampilan papan peringkat
+      loadLeaderboard();
+    } catch (error) {
+      console.error("Gagal menyimpan skor:", error);
+    }
+  }
+
+  // 3. Fungsi untuk Mengambil Data Papan Peringkat dari Apps Script
+  async function loadLeaderboard() {
+    try {
+      const response = await fetch(`${SCRIPT_URL}?action=getLeaderboard`);
+      const result = await response.json();
+
+      if (result.status === "success") {
+        renderLeaderboard(result.leaderboard);
+      }
+    } catch (error) {
+      console.error("Gagal memuat papan peringkat:", error);
+    }
+  }
+
+  // 4. Fungsi untuk Menampilkan Data ke Elemen HTML
+  function renderLeaderboard(data) {
+    const listContainer = document.getElementById("leaderboard-list");
+    if (!listContainer) return;
+
+    listContainer.innerHTML = ""; // Bersihkan list lama
+
+    if (!data || data.length === 0) {
+      listContainer.innerHTML = "<li>Belum ada data skor.</li>";
+      return;
+    }
+
+    data.forEach((player, index) => {
+      const li = document.createElement("li");
+      li.textContent = `#${index + 1} ${player.nama} - ${player.skor} Poin`;
+      listContainer.appendChild(li);
+    });
+  }
+
+  // 5. Panggil saat halaman pertama dibuka
+  document.addEventListener("DOMContentLoaded", () => {
+    loadLeaderboard();
+  });
+</script>
 </body>
 </html>
