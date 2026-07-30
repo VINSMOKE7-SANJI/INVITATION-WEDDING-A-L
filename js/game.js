@@ -323,15 +323,42 @@
     submitScore(finalScore);
   }
 
-  function submitScore(finalScore) {
+  function submitScore(finalScore, attempt) {
+    attempt = attempt || 1;
     const name = getRsvpName() || "Tamu";
-    if (window.CONFIG && CONFIG.scriptURL) {
-      fetch(CONFIG.scriptURL, {
-        method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify({ action: "game_score", name: name, score: finalScore })
-      }).catch(function () {});
-    }
-    setTimeout(loadLeaderboard, 1200);
+    if (!(window.CONFIG && CONFIG.scriptURL)) return;
+
+    fetch(CONFIG.scriptURL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify({ action: "game_score", name: name, score: finalScore })
+    })
+      .then(function (res) {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.json().catch(function () { return { ok: true }; });
+      })
+      .then(function (data) {
+        if (data && data.ok === false) throw new Error(data.error || "backend_error");
+        setTimeout(loadLeaderboard, 1000);
+      })
+      .catch(function (err) {
+        if (err instanceof TypeError) {
+          // kemungkinan diblokir CORS/jaringan -- kirim sekali lagi lewat
+          // no-cors sebagai jaring pengaman, tanpa verifikasi hasil
+          fetch(CONFIG.scriptURL, {
+            method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" },
+            body: JSON.stringify({ action: "game_score", name: name, score: finalScore })
+          }).then(function () { setTimeout(loadLeaderboard, 1000); }).catch(function () {});
+          return;
+        }
+        console.error("Gagal menyimpan skor ke server:", err);
+        if (attempt < 3) {
+          setTimeout(function () { submitScore(finalScore, attempt + 1); }, 2000);
+        } else {
+          const note = document.querySelector("#gameOver .game-overlay-note");
+          if (note) note.textContent = "Skor tersimpan di perangkat ini, tapi gagal terkirim ke server. Coba cek koneksi internet.";
+        }
+      });
   }
 
   function moveLeft() { if (player.lane > 0) player.lane--; }
