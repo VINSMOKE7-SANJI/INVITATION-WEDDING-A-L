@@ -41,9 +41,7 @@
     } catch (e) { /* ignore */ }
   }
   function getRsvpName() {
-    try { 
-      return localStorage.getItem(RSVP_NAME_KEY) || localStorage.getItem("guestName") || ""; 
-    } catch (e) { return ""; }
+    try { return localStorage.getItem(RSVP_NAME_KEY) || ""; } catch (e) { return ""; }
   }
 
   const BULAN_ID = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
@@ -73,7 +71,7 @@
     if (hasPlayed()) {
       let prev = 0;
       try { prev = parseInt(localStorage.getItem(GAME_KEY_SCORE) || "0", 10); } catch (e) {}
-      if (gameAlreadyScore) gameAlreadyScore.textContent = prev;
+      gameAlreadyScore.textContent = prev;
       showOverlay(gameAlreadyPlayed);
       gameEnabled = false;
     } else if (isGameClosedByDate()) {
@@ -89,44 +87,45 @@
   }
   refreshGateState();
 
+  // Begitu RSVP berhasil dikirim (event dari js/script.js), evaluasi ulang
+  // gerbang game ini -- ini yang memperbaiki bug "sudah isi RSVP tapi game
+  // masih minta isi RSVP" karena sebelumnya status ini cuma dicek sekali.
   window.addEventListener("al:rsvp-submitted", refreshGateState);
 
-  // 1. FUNGSI LOAD LEADERBOARD (Sesuaikan dengan HTML & Code.gs)
   function loadLeaderboard() {
-    const listContainer = document.getElementById("leaderboard-list");
-    if (!listContainer) return;
-
+    const list = document.getElementById("leaderboardList");
+    if (!list) return;
     if (!window.CONFIG || !CONFIG.scriptURL) {
-      listContainer.innerHTML = '<li>Papan peringkat akan tampil setelah backend disambungkan.</li>';
+      list.innerHTML = '<p class="wishes-empty">Papan peringkat akan tampil setelah backend disambungkan.</p>';
       return;
     }
-
-    // Panggil action getLeaderboard sesuai Code.gs
-    fetch(CONFIG.scriptURL + "?action=getLeaderboard")
+    fetch(CONFIG.scriptURL + "?action=leaderboard")
       .then(function (res) { return res.json(); })
-      .then(function (res) {
-        if (res.status === "success" && Array.isArray(res.leaderboard) && res.leaderboard.length > 0) {
-          listContainer.innerHTML = "";
-          res.leaderboard.forEach(function (player, index) {
-            const li = document.createElement("li");
-            li.textContent = `#${index + 1} ${escapeHtmlGame(player.nama)} - ${player.skor} Poin`;
-            listContainer.appendChild(li);
-          });
-        } else {
-          listContainer.innerHTML = '<li>Belum ada data skor. Jadilah yang pertama!</li>';
+      .then(function (data) {
+        if (!Array.isArray(data) || !data.length) {
+          list.innerHTML = '<p class="wishes-empty">Belum ada yang main. Jadilah yang pertama!</p>';
+          return;
         }
+        const top = data.slice(0, (CONFIG.leaderboardTopCount || 10));
+        list.innerHTML = top.map(function (row, i) {
+          return (
+            '<div class="leaderboard-item">' +
+              '<span class="leaderboard-rank">' + (i + 1) + '</span>' +
+              '<span class="leaderboard-name">' + escapeHtmlGame(row.name) + '</span>' +
+              '<span class="leaderboard-score">' + escapeHtmlGame(row.score) + ' poin</span>' +
+            '</div>'
+          );
+        }).join("");
       })
       .catch(function () {
-        listContainer.innerHTML = '<li>Gagal memuat papan peringkat.</li>';
+        list.innerHTML = '<p class="wishes-empty">Gagal memuat papan peringkat.</p>';
       });
   }
-
   function escapeHtmlGame(str) {
     return String(str == null ? "" : str).replace(/[&<>"']/g, function (c) {
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
     });
   }
-
   loadLeaderboard();
   if (CONFIG.rsvpPollSeconds) {
     setInterval(loadLeaderboard, CONFIG.rsvpPollSeconds * 1000);
@@ -137,7 +136,6 @@
   let laneW = W / LANES;
 
   function resize() {
-    if (!canvas || !canvas.parentElement) return;
     const rect = canvas.parentElement.getBoundingClientRect();
     if (!rect.width) return;
     W = Math.min(rect.width, 480);
@@ -173,7 +171,7 @@
     score = 0; speed = 4.2; elapsed = 0;
     obstacles = []; coins = []; spawnTimer = 0; coinTimer = 0;
     player.lane = 1; player.jumping = false; player.jumpT = 0;
-    if (scoreEl) scoreEl.textContent = "0";
+    scoreEl.textContent = "0";
   }
 
   function spawnObstacle() {
@@ -220,7 +218,7 @@
       if (c.lane === player.lane && Math.abs(c.y - playerY) < 28) { c.taken = true; score += 15; }
     });
 
-    if (scoreEl) scoreEl.textContent = Math.floor(score);
+    scoreEl.textContent = Math.floor(score);
   }
 
   function draw() {
@@ -320,32 +318,20 @@
     if (raf) cancelAnimationFrame(raf);
     const finalScore = Math.floor(score);
     markPlayed(finalScore);
-    if (gameOverScore) gameOverScore.textContent = finalScore;
+    gameOverScore.textContent = finalScore;
     showOverlay(gameOverEl);
     submitScore(finalScore);
   }
 
-  // 2. FUNGSI KIRIM SKOR (Sinkron dengan Code.gs: action = "saveScore")
   function submitScore(finalScore) {
-    const name = getRsvpName() || "Tamu Undangan";
-    if (!(window.CONFIG && CONFIG.scriptURL)) return;
-
+    const name = getRsvpName() || "Tamu";
+    if (!(window.CONFIG && CONFIG.scriptURL)) { setTimeout(loadLeaderboard, 1000); return; }
     fetch(CONFIG.scriptURL, {
       method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ 
-        action: "saveScore", 
-        nama: name, 
-        skor: finalScore 
-      })
-    })
-      .then(function (res) { return res.json(); })
-      .then(function (data) {
-        setTimeout(loadLeaderboard, 1000);
-      })
-      .catch(function (err) {
-        console.error("Gagal menyimpan skor ke server:", err);
-      });
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify({ action: "game_score", name: name, score: finalScore })
+    }).finally(function () { setTimeout(loadLeaderboard, 1200); });
   }
 
   function moveLeft() { if (player.lane > 0) player.lane--; }
@@ -359,40 +345,35 @@
     else if (e.key === "ArrowUp" || e.key === " ") jump();
   });
 
-  if (btnLeft) btnLeft.addEventListener("click", moveLeft);
-  if (btnRight) btnRight.addEventListener("click", moveRight);
-  if (btnJump) btnJump.addEventListener("click", jump);
+  btnLeft.addEventListener("click", moveLeft);
+  btnRight.addEventListener("click", moveRight);
+  btnJump.addEventListener("click", jump);
 
   let touchStartX = 0, touchStartY = 0;
-  if (canvas) {
-    canvas.addEventListener("touchstart", function (e) {
-      const t = e.changedTouches[0];
-      touchStartX = t.clientX; touchStartY = t.clientY;
-    }, { passive: true });
-    
-    canvas.addEventListener("touchend", function (e) {
-      const t = e.changedTouches[0];
-      const dx = t.clientX - touchStartX;
-      const dy = t.clientY - touchStartY;
-      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 30) {
-        if (dx > 0) moveRight(); else moveLeft();
-      } else if (dy < -30) {
-        jump();
-      }
-    }, { passive: true });
-  }
+  canvas.addEventListener("touchstart", function (e) {
+    const t = e.changedTouches[0];
+    touchStartX = t.clientX; touchStartY = t.clientY;
+  }, { passive: true });
+  canvas.addEventListener("touchend", function (e) {
+    const t = e.changedTouches[0];
+    const dx = t.clientX - touchStartX;
+    const dy = t.clientY - touchStartY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 30) {
+      if (dx > 0) moveRight(); else moveLeft();
+    } else if (dy < -30) {
+      jump();
+    }
+  }, { passive: true });
 
-  if (startBtn) startBtn.addEventListener("click", startGame);
+  startBtn.addEventListener("click", startGame);
 
-  if (fullscreenBtn) {
-    fullscreenBtn.addEventListener("click", function () {
-      if (!document.fullscreenElement) {
-        (gameStage.requestFullscreen || gameStage.webkitRequestFullscreen || function(){}).call(gameStage);
-      } else {
-        (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
-      }
-    });
-  }
+  fullscreenBtn.addEventListener("click", function () {
+    if (!document.fullscreenElement) {
+      (gameStage.requestFullscreen || gameStage.webkitRequestFullscreen || function(){}).call(gameStage);
+    } else {
+      (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+    }
+  });
 
   resize();
 })();
