@@ -31,7 +31,7 @@ const CONFIG = {
 
   // Link live streaming (YouTube/Instagram/Zoom, dll). Kosongkan ("") kalau
   // tidak ada live streaming -- section-nya otomatis akan disembunyikan.
-  liveStreamingURL: "https://klik.tvri.go.id/detailchannel/TVRI_CH_00",
+  liveStreamingURL: "",
 
   // Footer iklan "Order Undangan Digital" -- nomor WhatsApp tujuan.
   footerAdWhatsApp: "6281246211461",
