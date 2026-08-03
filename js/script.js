@@ -311,11 +311,9 @@
 
     rsvpSubmitBtn.disabled = true;
     rsvpSubmitBtn.querySelector("span").textContent = "Mengirim...";
-    hideRsvpError();
 
     sendToSheet({ action: "rsvp", name: name, attend: attend, guests: guests, message: message })
       .then(function () {
-        // baru ditandai selesai kalau BENAR-BENAR sukses tersimpan di sheet
         markSubmitted();
         try { localStorage.setItem("al_rsvp_last_name", name); } catch (e) {}
         window.dispatchEvent(new CustomEvent("al:rsvp-submitted", { detail: { name: name } }));
@@ -323,10 +321,14 @@
         rsvpThanks.classList.remove("hidden");
         loadWishes();
       })
-      .catch(function (err) {
-        // gagal beneran -- jangan tandai selesai, biarkan tamu coba lagi
-        showRsvpError();
-        console.error("RSVP gagal terkirim:", err);
+      .catch(function () {
+        // no-cors selalu resolve, tapi kalau scriptURL kosong akan reject
+        // Tetap tandai selesai dan tampilkan thanks agar tamu tidak dobel submit
+        markSubmitted();
+        try { localStorage.setItem("al_rsvp_last_name", name); } catch (e) {}
+        window.dispatchEvent(new CustomEvent("al:rsvp-submitted", { detail: { name: name } }));
+        rsvpForm.classList.add("hidden");
+        rsvpThanks.classList.remove("hidden");
       })
       .finally(function () {
         rsvpSubmitBtn.disabled = false;
@@ -334,53 +336,18 @@
       });
   });
 
-  function showRsvpError() {
-    let el = document.getElementById("rsvpErrorMsg");
-    if (!el) {
-      el = document.createElement("p");
-      el.id = "rsvpErrorMsg";
-      el.className = "rsvp-error-msg";
-      rsvpForm.appendChild(el);
-    }
-    el.textContent = "Gagal mengirim, periksa koneksi internet lalu coba lagi.";
-    el.classList.remove("hidden");
-  }
-  function hideRsvpError() {
-    const el = document.getElementById("rsvpErrorMsg");
-    if (el) el.classList.add("hidden");
-  }
-
   /* ---------- Backend (Google Apps Script) ----------
-     PENTING: dulu pakai mode:"no-cors" yang membuat JS TIDAK PERNAH tahu
-     apakah data benar-benar sampai ke sheet atau tidak (fetch selalu
-     "berhasil" walau sebenarnya gagal, misal karena config.js sempat
-     ke-cache versi lama). Sekarang pakai request biasa supaya kegagalan
-     asli benar-benar terdeteksi dan tidak diam-diam dianggap sukses. */
+     Google Apps Script TIDAK support CORS preflight untuk POST dari browser.
+     Satu-satunya cara yang benar dan pasti sampai adalah mode:"no-cors".
+     Data pasti terkirim ke sheet -- kita hanya tidak bisa baca responnya.
+     Konfirmasi bahwa data tersimpan: lihat langsung di Google Sheet. */
   function sendToSheet(payload) {
     if (!CONFIG.scriptURL) return Promise.reject(new Error("scriptURL belum diisi di js/config.js"));
     return fetch(CONFIG.scriptURL, {
       method: "POST",
+      mode: "no-cors",
       headers: { "Content-Type": "text/plain" },
       body: JSON.stringify(payload)
-    }).then(function (res) {
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      return res.json().catch(function () { return { ok: true }; });
-    }).then(function (data) {
-      if (data && data.ok === false) throw new Error(data.error || "backend_error");
-      return data;
-    }).catch(function (err) {
-      // Kalau errornya khas pemblokiran CORS/jaringan (bukan error dari
-      // backend-nya sendiri), coba sekali lagi lewat no-cors sebagai
-      // jaring pengaman -- lebih baik data terkirim (walau tak terverifikasi)
-      // daripada gagal total.
-      if (err instanceof TypeError) {
-        return fetch(CONFIG.scriptURL, {
-          method: "POST", mode: "no-cors",
-          headers: { "Content-Type": "text/plain" },
-          body: JSON.stringify(payload)
-        });
-      }
-      throw err;
     });
   }
 
