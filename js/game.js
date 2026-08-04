@@ -95,7 +95,7 @@
   function loadLeaderboard() {
     const list = document.getElementById("leaderboardList");
     if (!list) return;
-    if (!window.CONFIG || !CONFIG.scriptURL) {
+    if (typeof CONFIG === "undefined" || !CONFIG.scriptURL) {
       list.innerHTML = '<p class="wishes-empty">Papan peringkat akan tampil setelah backend disambungkan.</p>';
       return;
     }
@@ -325,7 +325,7 @@
 
   function submitScore(finalScore) {
     const name = getRsvpName() || "Tamu";
-    if (!(window.CONFIG && CONFIG.scriptURL)) { setTimeout(loadLeaderboard, 1000); return; }
+    if (typeof CONFIG === "undefined" || !CONFIG.scriptURL) { setTimeout(loadLeaderboard, 1000); return; }
     fetch(CONFIG.scriptURL, {
       method: "POST",
       mode: "no-cors",
